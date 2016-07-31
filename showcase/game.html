@@ -6,6 +6,7 @@
 
 		.game {
 			display: flex;
+			justify-content: space-around;
 		}
 
 		.game-container {
@@ -99,16 +100,16 @@
 
 
 
-		/* MAIN WINDOW */
-		.main-window {
+		/* BOARD WINDOW */
+		.board-window {
 			display: inline-block;
 		}
 
-		.main-window .title-bar {
+		.board-window .title-bar {
 			background-position: 0 -84px;
 		}
 
-		.main-window .board-wrapper {
+		.board-window .board-wrapper {
 			position: relative;
 			background-color: #bdbdbd;
 			padding: 7px;
@@ -246,7 +247,6 @@
 		.reset-button.face-surprised  { background-position: -52px -55px; }
 		.reset-button.face-sad        { background-position: -78px -55px; }
 		.reset-button.face-sunglasses { background-position: -104px -55px; }
-
 		/* END HEADER */
 
 		/* MIENFIELD */
@@ -283,14 +283,15 @@
 		.minefield .flag            { background-position: -16px -39px; }
 		.minefield .question        { background-position: -80px -39px; }
 		/* END MIENFIELD */
+		/* END BOARD WINDOW */
 
 	</style>
 
 	<script>
-		function renderMinefield(size) {
-			for (var i = 0; i < size; i++) {
+		function renderMinefield(rows, columns) {
+			for (var i = 0; i < rows; i++) {
 				document.write('<div class="row">');
-				for (var j = 0; j < size; j++) {
+				for (var j = 0; j < columns; j++) {
 					document.write('<div class="cell covered"></div>');
 				}
 				document.write('</div>');
@@ -312,27 +313,27 @@
                         <div class="fields">
                             <p>
                             	<label>Height:</label>
-                            	<input class="form-textbox" class="custom-height" type="text">
+                            	<input class="form-textbox custom-height" type="text">
                             </p>
                             <p>
                             	<label>Width:</label>
-                            	<input class="form-textbox" class="custom-width" type="text">
+                            	<input class="form-textbox custom-width" type="text">
                             </p>
                             <p>
                             	<label>Mines:</label>
-                            	<input class="form-textbox" class="custom-mines" type="text">
+                            	<input class="form-textbox custom-mines" type="text">
                             </p>
                         </div>
                         <div class="buttons">
-                            <input class="form-button" class="ok-btn" type="button" value="OK">
-                            <input class="form-button" class="cancel-btn" type="button" value="Cancel">
+                            <input class="form-button ok-btn" type="button" value="OK">
+                            <input class="form-button cancel-btn" type="button" value="Cancel">
                         </div>
                     </div>
                 </div>
             </div>
         </div><!-- .custom-level-dialog -->
 
-        <div class="main-window window-wrapper-outer">
+        <div class="board-window window-wrapper-outer">
             <div class="window-wrapper-inner">
                 <div class="window-container">
                     <div class="title-bar"></div>
@@ -346,12 +347,12 @@
                         <ul class="menu">
                             <li id="menu-new">New</li>
                             <li class="menu-divider"></li>
-                            <li class="game-level checked" id="menu-beginner">Beginner</li>
-                            <li class="game-level" id="menu-intermediate">Intermediate</li>
-                            <li class="game-level" id="menu-expert">Expert</li>
-                            <li class="game-level" id="menu-custom">Custom…</li>
+                            <li class="game-level menu-beginner checked">Beginner</li>
+                            <li class="game-level menu-intermediate">Intermediate</li>
+                            <li class="game-level menu-expert">Expert</li>
+                            <li class="game-level menu-custom">Custom…</li>
                             <li class="menu-divider"></li>
-                            <li class="checked" id="menu-marks">Marks (?)</li>
+                            <li class="menu-marks checked">Marks (?)</li>
                         </ul>
 
                         <div class="header-wrapper">
@@ -378,18 +379,17 @@
 
                         <div class="minefield">
                         	<script>
-                        		renderMinefield(10);
+                        		renderMinefield(10, 10);
                         	</script>
                         </div>
 
                     </div>
                 </div>
             </div>
-        </div><!-- .main-window -->
+        </div><!-- .board-window -->
 
     </div>
 	
-
     <div class="game-container">
 
         <div class="custom-level-dialog window-wrapper-outer">
@@ -412,15 +412,15 @@
                             </p>
                         </div>
                         <div class="buttons">
-                            <input class="form-button" class="ok-btn" type="button" value="OK">
-                            <input class="form-button" class="cancel-btn" type="button" value="Cancel">
+                            <input class="form-button ok-btn" type="button" value="OK">
+                            <input class="form-button cancel-btn" type="button" value="Cancel">
                         </div>
                     </div>
                 </div>
             </div>
         </div><!-- .custom-level-dialog -->
 
-        <div class="main-window window-wrapper-outer">
+        <div class="board-window window-wrapper-outer">
             <div class="window-wrapper-inner">
                 <div class="window-container">
                     <div class="title-bar"></div>
@@ -466,14 +466,101 @@
 
                         <div class="minefield">
                         	<script>
-                        		renderMinefield(20);
+                        		renderMinefield(20, 20);
                         	</script>
                         </div>
 
                     </div>
                 </div>
             </div>
-        </div><!-- .main-window -->
+        </div><!-- .board-window -->
+
+    </div>
+
+    <div class="game-container">
+
+        <div class="custom-level-dialog window-wrapper-outer" style="display: block;">
+            <div class="window-wrapper-inner">
+                <div class="window-container">
+                    <div class="title-bar"></div>
+                    <div class="content">
+                        <div class="fields">
+                            <p>
+                            	<label>Height:</label>
+                            	<input class="form-textbox" class="custom-height" type="text">
+                            </p>
+                            <p>
+                            	<label>Width:</label>
+                            	<input class="form-textbox" class="custom-width" type="text">
+                            </p>
+                            <p>
+                            	<label>Mines:</label>
+                            	<input class="form-textbox" class="custom-mines" type="text">
+                            </p>
+                        </div>
+                        <div class="buttons">
+                            <input class="form-button ok-btn" type="button" value="OK">
+                            <input class="form-button cancel-btn" type="button" value="Cancel">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- .custom-level-dialog -->
+
+        <div class="board-window window-wrapper-outer">
+            <div class="window-wrapper-inner">
+                <div class="window-container">
+                    <div class="title-bar"></div>
+
+                    <div class="menu-link-container">
+                        <a href="#" class="menu-link">Game</a>
+                    </div>
+
+                    <div class="board-wrapper">
+
+                        <ul class="menu">
+                            <li id="menu-new">New</li>
+                            <li class="menu-divider"></li>
+                            <li class="game-level checked" id="menu-beginner">Beginner</li>
+                            <li class="game-level" id="menu-intermediate">Intermediate</li>
+                            <li class="game-level" id="menu-expert">Expert</li>
+                            <li class="game-level" id="menu-custom">Custom…</li>
+                            <li class="menu-divider"></li>
+                            <li class="checked" id="menu-marks">Marks (?)</li>
+                        </ul>
+
+                        <div class="header-wrapper">
+                            <div class="header-container">
+
+                                <div class="header">
+                                    <div class="mine-count numbers">
+                                        <div class="digit hundres t0"></div>
+                                        <div class="digit tens t0"></div>
+                                        <div class="digit ones t0"></div>
+                                    </div>
+
+                                    <div class="reset-button face-smile"></div>
+
+                                    <div class="timer numbers">
+                                        <div class="digit hundres t0"></div>
+                                        <div class="digit tens t0"></div>
+                                        <div class="digit ones t0"></div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="minefield">
+                        	<script>
+                        		renderMinefield(20, 40);
+                        	</script>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div><!-- .board-window -->
 
     </div>
 
