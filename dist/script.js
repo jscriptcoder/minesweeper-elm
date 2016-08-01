@@ -7710,7 +7710,7 @@ var _user$project$Menu$view = function (model) {
 					]),
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_elm_lang$html$Html$text('Custom…')
+						_elm_lang$html$Html$text('Custom...')
 					])),
 				A2(
 				_elm_lang$html$Html$li,
@@ -7724,7 +7724,7 @@ var _user$project$Menu$view = function (model) {
 				_elm_lang$html$Html$li,
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_elm_lang$html$Html_Attributes$class('checked')
+						_elm_lang$html$Html_Attributes$class('menu-marks checked')
 					]),
 				_elm_lang$core$Native_List.fromArray(
 					[
@@ -7732,6 +7732,7 @@ var _user$project$Menu$view = function (model) {
 					]))
 			]));
 };
+var _user$project$Menu$model = {open: false, level: 0, marks: true};
 
 var _user$project$Header$viewTimer = function (model) {
 	return A2(
