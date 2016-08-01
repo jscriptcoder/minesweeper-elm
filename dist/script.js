@@ -7733,6 +7733,76 @@ var _user$project$Menu$view = function (model) {
 			]));
 };
 
+var _user$project$Header$viewTimer = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html_Attributes$class('timer numbers')
+			]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('digit hundres t0')
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[])),
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('digit tens t0')
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[])),
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('digit ones t0')
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[]))
+			]));
+};
+var _user$project$Header$viewMineCount = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html_Attributes$class('mine-count numbers')
+			]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('digit hundres t0')
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[])),
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('digit tens t0')
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[])),
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('digit ones t0')
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[]))
+			]));
+};
 var _user$project$Header$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -7758,39 +7828,7 @@ var _user$project$Header$view = function (model) {
 							]),
 						_elm_lang$core$Native_List.fromArray(
 							[
-								A2(
-								_elm_lang$html$Html$div,
-								_elm_lang$core$Native_List.fromArray(
-									[
-										_elm_lang$html$Html_Attributes$class('mine-count numbers')
-									]),
-								_elm_lang$core$Native_List.fromArray(
-									[
-										A2(
-										_elm_lang$html$Html$div,
-										_elm_lang$core$Native_List.fromArray(
-											[
-												_elm_lang$html$Html_Attributes$class('digit hundres t0')
-											]),
-										_elm_lang$core$Native_List.fromArray(
-											[])),
-										A2(
-										_elm_lang$html$Html$div,
-										_elm_lang$core$Native_List.fromArray(
-											[
-												_elm_lang$html$Html_Attributes$class('digit tens t0')
-											]),
-										_elm_lang$core$Native_List.fromArray(
-											[])),
-										A2(
-										_elm_lang$html$Html$div,
-										_elm_lang$core$Native_List.fromArray(
-											[
-												_elm_lang$html$Html_Attributes$class('digit ones t0')
-											]),
-										_elm_lang$core$Native_List.fromArray(
-											[]))
-									])),
+								_user$project$Header$viewMineCount(model),
 								A2(
 								_elm_lang$html$Html$div,
 								_elm_lang$core$Native_List.fromArray(
@@ -7799,44 +7837,40 @@ var _user$project$Header$view = function (model) {
 									]),
 								_elm_lang$core$Native_List.fromArray(
 									[])),
-								A2(
-								_elm_lang$html$Html$div,
-								_elm_lang$core$Native_List.fromArray(
-									[
-										_elm_lang$html$Html_Attributes$class('timer numbers')
-									]),
-								_elm_lang$core$Native_List.fromArray(
-									[
-										A2(
-										_elm_lang$html$Html$div,
-										_elm_lang$core$Native_List.fromArray(
-											[
-												_elm_lang$html$Html_Attributes$class('digit hundres t0')
-											]),
-										_elm_lang$core$Native_List.fromArray(
-											[])),
-										A2(
-										_elm_lang$html$Html$div,
-										_elm_lang$core$Native_List.fromArray(
-											[
-												_elm_lang$html$Html_Attributes$class('digit tens t0')
-											]),
-										_elm_lang$core$Native_List.fromArray(
-											[])),
-										A2(
-										_elm_lang$html$Html$div,
-										_elm_lang$core$Native_List.fromArray(
-											[
-												_elm_lang$html$Html_Attributes$class('digit ones t0')
-											]),
-										_elm_lang$core$Native_List.fromArray(
-											[]))
-									]))
+								_user$project$Header$viewTimer(model)
 							]))
 					]))
 			]));
 };
 
+var _user$project$Cell$view = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html_Attributes$class('cell covered')
+			]),
+		_elm_lang$core$Native_List.fromArray(
+			[]));
+};
+var _user$project$Cell$model = {open: false, marked: false, bomb: false, value: 0};
+
+var _user$project$Minefield$generateField = F2(
+	function (rows, columns) {
+		return A2(
+			_elm_lang$core$List$repeat,
+			rows,
+			A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('row')
+					]),
+				A2(
+					_elm_lang$core$List$repeat,
+					columns,
+					_user$project$Cell$view(_user$project$Cell$model))));
+	});
 var _user$project$Minefield$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -7844,8 +7878,7 @@ var _user$project$Minefield$view = function (model) {
 			[
 				_elm_lang$html$Html_Attributes$class('minefield')
 			]),
-		_elm_lang$core$Native_List.fromArray(
-			[]));
+		A2(_user$project$Minefield$generateField, model.rows, model.columns));
 };
 
 var _user$project$Board$view = function (model) {
@@ -7899,25 +7932,139 @@ var _user$project$Board$view = function (model) {
 										_elm_lang$core$Native_List.fromArray(
 											[
 												_elm_lang$html$Html$text('Game')
-											])),
-										A2(
-										_elm_lang$html$Html$div,
-										_elm_lang$core$Native_List.fromArray(
-											[
-												_elm_lang$html$Html_Attributes$class('board-wrapper')
-											]),
-										_elm_lang$core$Native_List.fromArray(
-											[
-												_user$project$Menu$view(model),
-												_user$project$Header$view(model),
-												_user$project$Minefield$view(model)
 											]))
+									])),
+								A2(
+								_elm_lang$html$Html$div,
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_elm_lang$html$Html_Attributes$class('board-wrapper')
+									]),
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_user$project$Menu$view(model),
+										_user$project$Header$view(model),
+										_user$project$Minefield$view(model)
 									]))
 							]))
 					]))
 			]));
 };
 
+var _user$project$Dialog$viewButtons = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html_Attributes$class('buttons')
+			]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$html$Html$input,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('form-button ok-btn'),
+						_elm_lang$html$Html_Attributes$type$('button'),
+						_elm_lang$html$Html_Attributes$value('OK')
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[])),
+				A2(
+				_elm_lang$html$Html$input,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('form-button cancel-btn'),
+						_elm_lang$html$Html_Attributes$type$('button'),
+						_elm_lang$html$Html_Attributes$value('Cancel')
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[]))
+			]));
+};
+var _user$project$Dialog$viewFields = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html_Attributes$class('fields')
+			]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$html$Html$p,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_elm_lang$html$Html$label,
+						_elm_lang$core$Native_List.fromArray(
+							[]),
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html$text('Height:')
+							])),
+						A2(
+						_elm_lang$html$Html$input,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html_Attributes$class('form-textbox custom-height'),
+								_elm_lang$html$Html_Attributes$type$('text')
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[]))
+					])),
+				A2(
+				_elm_lang$html$Html$p,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_elm_lang$html$Html$label,
+						_elm_lang$core$Native_List.fromArray(
+							[]),
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html$text('Width:')
+							])),
+						A2(
+						_elm_lang$html$Html$input,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html_Attributes$class('form-textbox custom-height'),
+								_elm_lang$html$Html_Attributes$type$('text')
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[]))
+					])),
+				A2(
+				_elm_lang$html$Html$p,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_elm_lang$html$Html$label,
+						_elm_lang$core$Native_List.fromArray(
+							[]),
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html$text('Mines:')
+							])),
+						A2(
+						_elm_lang$html$Html$input,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html_Attributes$class('form-textbox custom-height'),
+								_elm_lang$html$Html_Attributes$type$('text')
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[]))
+					]))
+			]));
+};
 var _user$project$Dialog$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -7959,116 +8106,8 @@ var _user$project$Dialog$view = function (model) {
 									]),
 								_elm_lang$core$Native_List.fromArray(
 									[
-										A2(
-										_elm_lang$html$Html$div,
-										_elm_lang$core$Native_List.fromArray(
-											[
-												_elm_lang$html$Html_Attributes$class('fields')
-											]),
-										_elm_lang$core$Native_List.fromArray(
-											[
-												A2(
-												_elm_lang$html$Html$p,
-												_elm_lang$core$Native_List.fromArray(
-													[]),
-												_elm_lang$core$Native_List.fromArray(
-													[
-														A2(
-														_elm_lang$html$Html$label,
-														_elm_lang$core$Native_List.fromArray(
-															[]),
-														_elm_lang$core$Native_List.fromArray(
-															[
-																_elm_lang$html$Html$text('Height:')
-															])),
-														A2(
-														_elm_lang$html$Html$input,
-														_elm_lang$core$Native_List.fromArray(
-															[
-																_elm_lang$html$Html_Attributes$class('form-textbox custom-height'),
-																_elm_lang$html$Html_Attributes$type$('text')
-															]),
-														_elm_lang$core$Native_List.fromArray(
-															[]))
-													])),
-												A2(
-												_elm_lang$html$Html$p,
-												_elm_lang$core$Native_List.fromArray(
-													[]),
-												_elm_lang$core$Native_List.fromArray(
-													[
-														A2(
-														_elm_lang$html$Html$label,
-														_elm_lang$core$Native_List.fromArray(
-															[]),
-														_elm_lang$core$Native_List.fromArray(
-															[
-																_elm_lang$html$Html$text('Width:')
-															])),
-														A2(
-														_elm_lang$html$Html$input,
-														_elm_lang$core$Native_List.fromArray(
-															[
-																_elm_lang$html$Html_Attributes$class('form-textbox custom-height'),
-																_elm_lang$html$Html_Attributes$type$('text')
-															]),
-														_elm_lang$core$Native_List.fromArray(
-															[]))
-													])),
-												A2(
-												_elm_lang$html$Html$p,
-												_elm_lang$core$Native_List.fromArray(
-													[]),
-												_elm_lang$core$Native_List.fromArray(
-													[
-														A2(
-														_elm_lang$html$Html$label,
-														_elm_lang$core$Native_List.fromArray(
-															[]),
-														_elm_lang$core$Native_List.fromArray(
-															[
-																_elm_lang$html$Html$text('Mines:')
-															])),
-														A2(
-														_elm_lang$html$Html$input,
-														_elm_lang$core$Native_List.fromArray(
-															[
-																_elm_lang$html$Html_Attributes$class('form-textbox custom-height'),
-																_elm_lang$html$Html_Attributes$type$('text')
-															]),
-														_elm_lang$core$Native_List.fromArray(
-															[]))
-													]))
-											])),
-										A2(
-										_elm_lang$html$Html$div,
-										_elm_lang$core$Native_List.fromArray(
-											[
-												_elm_lang$html$Html_Attributes$class('buttons')
-											]),
-										_elm_lang$core$Native_List.fromArray(
-											[
-												A2(
-												_elm_lang$html$Html$input,
-												_elm_lang$core$Native_List.fromArray(
-													[
-														_elm_lang$html$Html_Attributes$class('form-button ok-btn'),
-														_elm_lang$html$Html_Attributes$type$('button'),
-														_elm_lang$html$Html_Attributes$value('OK')
-													]),
-												_elm_lang$core$Native_List.fromArray(
-													[])),
-												A2(
-												_elm_lang$html$Html$input,
-												_elm_lang$core$Native_List.fromArray(
-													[
-														_elm_lang$html$Html_Attributes$class('form-button cancel-btn'),
-														_elm_lang$html$Html_Attributes$type$('button'),
-														_elm_lang$html$Html_Attributes$value('Cancel')
-													]),
-												_elm_lang$core$Native_List.fromArray(
-													[]))
-											]))
+										_user$project$Dialog$viewFields(model),
+										_user$project$Dialog$viewButtons(model)
 									]))
 							]))
 					]))
@@ -8088,11 +8127,12 @@ var _user$project$Game$view = function (model) {
 				_user$project$Board$view(model)
 			]));
 };
+var _user$project$Game$model = {mines: 10, rows: 9, columns: 9};
 
 var _user$project$Main$main = {
 	main: _elm_lang$html$Html_App$program(
 		{
-			init: {ctor: '_Tuple2', _0: 'Hello Minesweeper!!', _1: _elm_lang$core$Platform_Cmd$none},
+			init: {ctor: '_Tuple2', _0: _user$project$Game$model, _1: _elm_lang$core$Platform_Cmd$none},
 			view: _user$project$Game$view,
 			update: F2(
 				function (msg, model) {

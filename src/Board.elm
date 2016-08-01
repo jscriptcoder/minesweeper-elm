@@ -8,41 +8,19 @@ import Minefield
 
 
 
-{-
-<div class="board-window window-wrapper-outer">
-    <div class="window-wrapper-inner">
-        <div class="window-container">
-            <div class="title-bar"></div>
+-- VIEW
 
-            <div class="menu-link-container">
-                <a href="#" class="menu-link">Game</a>
-            </div>
-
-            <div class="board-wrapper">
-
-                <Menu />
-
-                <Header />
-
-                <Minefield />
-
-            </div>
-        </div>
-    </div>
-</div>
--}
 view model =
     div [ class "board-window window-wrapper-outer" ]
         [ div [ class "window-wrapper-inner" ]
             [ div [ class "window-container" ]
                 [ div [ class "title-bar" ] []
                 , div [ class "menu-link-container" ]
-                    [ div [ class "menu-link", href "#" ] [ text "Game" ]
-                    , div [ class "board-wrapper" ]
-                        [ Menu.view model
-                        , Header.view model
-                        , Minefield.view model
-                        ]
+                    [ div [ class "menu-link", href "#" ] [ text "Game" ] ]
+                , div [ class "board-wrapper" ]
+                    [ Menu.view model
+                    , Header.view model
+                    , Minefield.view model
                     ]
                 ]
             ]

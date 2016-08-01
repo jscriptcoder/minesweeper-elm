@@ -4,7 +4,7 @@ import Game
 
 
 main =
-    program { init = ("Hello Minesweeper!!", Cmd.none)
+    program { init = (Game.model, Cmd.none)
             , view = Game.view
             , update = \msg model -> (model, Cmd.none)
             , subscriptions = \model -> Sub.none
