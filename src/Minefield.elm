@@ -6,4 +6,5 @@ import Html.Attributes exposing (class)
 
 
 {- <div class="minefield"></div> -}
-view = div [ class "minefield" ] []
+view model =
+    div [ class "minefield" ] []

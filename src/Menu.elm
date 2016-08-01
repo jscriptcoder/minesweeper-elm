@@ -17,7 +17,8 @@ import Html.Attributes exposing (class)
     <li class="menu-marks checked">Marks (?)</li>
 </ul>
 -}
-view = ul [ class "menu" ]
+view model =
+    ul [ class "menu" ]
     [ li [ class "menu-new" ] [ text "New" ]
     , li [ class "menu-divider" ] []
     , li [ class "game-level menu-beginner checked" ] [ text "Beginner" ]

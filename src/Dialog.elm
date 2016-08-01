@@ -1,7 +1,7 @@
 module Dialog exposing (..)
 
 import Html exposing (div, p, label, input, text)
-import Html.Attributes exposing (class, type, value)
+import Html.Attributes exposing (class, type', value)
 
 
 
@@ -34,7 +34,7 @@ import Html.Attributes exposing (class, type, value)
     </div>
 </div>
 -}
-view =
+view model =
     div [ class "custom-level-dialog window-wrapper-outer" ] 
         [ div [ class "window-wrapper-inner" ]
             [ div [ class "window-container" ]
@@ -44,27 +44,29 @@ view =
                         [ p []
                             [ label [] [ text "Height:"]
                             , input [ class "form-textbox custom-height"
-                                    , type "text"
+                                    , type' "text"
                                     ] []
                             ]
                         , p []
                             [ label [] [ text "Width:"]
                             , input [ class "form-textbox custom-height"
-                                    , type "text"
+                                    , type' "text"
                                     ] []
+                            ]
                         , p []
                             [ label [] [ text "Mines:"]
                             , input [ class "form-textbox custom-height"
-                                    , type "text"
+                                    , type' "text"
                                     ] []
+                            ]
                         ]
                     , div [ class "buttons" ]
                         [ input [ class "form-button ok-btn"
-                                , type "button"
+                                , type' "button"
                                 , value "OK"
                                 ] []
                         , input [ class "form-button cancel-btn"
-                                , type "button"
+                                , type' "button"
                                 , value "Cancel"
                                 ] []
                         ] 

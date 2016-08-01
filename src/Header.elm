@@ -28,7 +28,7 @@ import Html.Attributes exposing (class)
     </div>
 </div>
 -}
-view = 
+view model = 
     div [ class "header-wrapper" ]
         [ div [ class "header-container" ]
             [ div [ class "header" ]
