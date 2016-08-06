@@ -1,2 +1,2 @@
 # minesweeper-elm
-Implementation of MineSweeper in Elm language
+Implementation of MineSweeper in Elm
