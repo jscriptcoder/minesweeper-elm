@@ -1,6 +1,8 @@
-module Utils exposing (onRightClick)
+module Utils exposing (onRightClick, toInt)
 
--- onRightClick
+import String
+import Result
+
 
 type alias onRightClickOptions =
     { stopPropagation : Bool
@@ -14,3 +16,8 @@ onRightClick =
     , preventDefault : True
     }
 
+
+
+toInt : String -> Int
+toInt strNumber =
+    Result.withDefault (String.toInt strNumber)

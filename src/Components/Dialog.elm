@@ -1,52 +1,59 @@
-module Custom exposing (Msg, view)
+module Dialog exposing (Msg, view)
 
-import Html exposing (div, p, label, input, text)
+import Html exposing (Html, div, p, label, input, text)
 import Html.Attributes exposing (class, classList, type', value)
 import Html.Events exposing (onInput, onClick)
+import Utils
 import Game
 
 
 
 -- MESSAGES
 
-type Msg
+type Update
     = UpdateRows String
     | UpdateColumns String
     | UpdateMines String
-    | OK
+
+type Button
+    = OK
     | Cancel
+
+type Msg
+    = MsgUpdate Update
+    | MsgButton Button
 
 
 
 -- VIEW
 
 view : Game.Model -> Html Msg
-view model =
+view config, model =
     div [ classList
             [ ("custom-level-dialog", True)
             , ("window-wrapper-outer", True)
-            , ("open", model.customOpen)
+            , ("open", model.dialogOpen)
             ]
         ] 
         [ div [ class "window-wrapper-inner" ]
             [ div [ class "window-container" ]
                 [ div [ class "title-bar"] []
                 , div [ class "content" ]
-                    [ viewFields model.rows model.columns model.mines
-                    , viewButtons
+                    [ viewFields config
+                    , viewButtons config model
                     ]
                 ]
             ]
         ]
 
-viewFields : Int -> Int -> Int -> Html Msg
-viewFields rows columns mines =
+viewFields : Game.Config -> Html MsgUpdate
+viewFields config =
     div [ class "fields" ]
         [ p []
             [ label [] [ text "Height:"]
             , input [ class "form-textbox custom-height"
                     , type' "text"
-                    , value <| toString rows
+                    , value (toString config.rows)
                     , onInput UpdateRows
                     ] []
             ]
@@ -54,7 +61,7 @@ viewFields rows columns mines =
             [ label [] [ text "Width:"]
             , input [ class "form-textbox custom-width"
                     , type' "text"
-                    , value <| toString columns
+                    , value (toString config.columns)
                     , onInput UpdateColumns
                     ] []
             ]
@@ -62,13 +69,13 @@ viewFields rows columns mines =
             [ label [] [ text "Mines:"]
             , input [ class "form-textbox custom-mines"
                     , type' "text"
-                    , value <| toString mines
+                    , value (toString config.mines)
                     , onInput UpdateMines
                     ] []
             ]
         ]
 
-viewButtons : Html Msg
+viewButtons : Html MsgButton
 viewButtons =
     div [ class "buttons" ]
         [ input [ class "form-button ok-btn"
@@ -82,3 +89,36 @@ viewButtons =
                 , onClick Cancel
                 ] []
         ]
+
+
+
+-- UPDATE
+
+update : Msg -> Game.Config -> Game.Config
+update msg config =
+    case msg of
+        MsgUpdate updates ->
+            updateConfig updates config
+
+        MsgButton buttons ->
+            updateButton buttons 
+
+updateConfig : MsgUpdate -> Game.Config -> Game.Config
+updateConfig update config =
+    case update of
+        UpdateRows rows ->
+            { config | rows = Utils.toInt rows }
+
+        UpdateColumns columns ->
+            { config | columns = Utils.toInt columns }
+
+        UpdateMines mines ->
+            { config | mines = Utils.toInt mines }
+
+updateButton : MsgButton -> Game.Model -> Game.Model
+updateButton buttons game =
+    case buttons of
+        OK ->
+            { game | dialogOpen = False }
+        Cancel ->
+            { game | dialogOpen = False }

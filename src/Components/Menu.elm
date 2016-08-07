@@ -1,6 +1,6 @@
 module Menu exposing (Msg, view)
 
-import Html exposing (ul, li, text)
+import Html exposing (Html, ul, li, text)
 import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
 import Board

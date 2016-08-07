@@ -1,8 +1,8 @@
 import Html exposing (Html, div, text)
 import Html.App exposing (program)
-import Game
+import Components.Game
 
-main : Program (Maybe Game.Model)
+main : Program Never
 main =
     program { init = (Game.model, Cmd.none)
             , view = Game.view

@@ -1,6 +1,6 @@
 module Board exposing (model, view)
 
-import Html exposing (div, text)
+import Html exposing (Html, div, text)
 import Html.Attributes exposing (class, href)
 import Menu
 import Header
@@ -19,9 +19,9 @@ type Msg
 
 type alias Model =
     { level : Int
-    , marks: Bool
-    , menuOpen: Bool
-    , timer: Int
+    , marks : Bool
+    , timer : Int
+    , menuOpen : Bool
     , minefield : Minefield.Model
     }
 
@@ -29,8 +29,8 @@ model : Model
 model =
     { level = 1
     , marks = True
-    , menuOpen = False
     , timer = 0
+    , menuOpen = False
     , minefield = Minefield.model
     }
 
@@ -38,6 +38,7 @@ model =
 
 -- VIEW
 
+view : Model -> Html Msg
 view model =
     div [ class "board-window window-wrapper-outer" ]
         [ div [ class "window-wrapper-inner" ]
@@ -47,7 +48,7 @@ view model =
                     [ div [ class "menu-link", href "#" ] [ text "Game" ] ]
                 , div [ class "board-wrapper" ]
                     [ Menu.view model
-                    , Header.view model.header
+                    , Header.view model
                     , Minefield.view model.minefield
                     ]
                 ]
