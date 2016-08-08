@@ -4,6 +4,7 @@ import String
 import Result
 
 
+
 type alias onRightClickOptions =
     { stopPropagation : Bool
     , preventDefault : Bool
@@ -19,5 +20,7 @@ onRightClick =
 
 
 toInt : String -> Int
-toInt strNumber =
-    Result.withDefault (String.toInt strNumber)
+toInt strNum =
+  strNum
+    |> String.toInt
+    |> Result.withDefault 0

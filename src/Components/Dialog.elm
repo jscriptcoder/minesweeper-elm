@@ -3,6 +3,7 @@ module Dialog exposing (Msg, view)
 import Html exposing (Html, div, p, label, input, text)
 import Html.Attributes exposing (class, classList, type', value)
 import Html.Events exposing (onInput, onClick)
+import Html.App as App
 import Utils
 import Game
 
@@ -10,7 +11,7 @@ import Game
 
 -- MESSAGES
 
-type Update
+type UpdateInput
     = UpdateRows String
     | UpdateColumns String
     | UpdateMines String
@@ -20,40 +21,49 @@ type Button
     | Cancel
 
 type Msg
-    = MsgUpdate Update
-    | MsgButton Button
+    = UpdateMsg UpdateInput
+    | ButtonMsg Button
 
 
+
+-- MODEL
+
+type alias Model =
+    { open : Bool
+    , rows : Int
+    , columns : Int
+    , mines : Int
+    }
 
 -- VIEW
 
 view : Game.Model -> Html Msg
-view config, model =
+view gameModel =
     div [ classList
             [ ("custom-level-dialog", True)
             , ("window-wrapper-outer", True)
-            , ("open", model.dialogOpen)
+            , ("open", gameModel.dialog.open)
             ]
         ] 
         [ div [ class "window-wrapper-inner" ]
             [ div [ class "window-container" ]
                 [ div [ class "title-bar"] []
                 , div [ class "content" ]
-                    [ viewFields config
-                    , viewButtons config model
+                    [ App.map UpdateMsg (viewFields model.dialog)
+                    , App.map ButtonMsg viewButtons
                     ]
                 ]
             ]
         ]
 
-viewFields : Game.Config -> Html MsgUpdate
-viewFields config =
+viewFields : Model -> Html UpdateMsg
+viewFields model =
     div [ class "fields" ]
         [ p []
             [ label [] [ text "Height:"]
             , input [ class "form-textbox custom-height"
                     , type' "text"
-                    , value (toString config.rows)
+                    , value (toString model.rows)
                     , onInput UpdateRows
                     ] []
             ]
@@ -61,7 +71,7 @@ viewFields config =
             [ label [] [ text "Width:"]
             , input [ class "form-textbox custom-width"
                     , type' "text"
-                    , value (toString config.columns)
+                    , value (toString model.columns)
                     , onInput UpdateColumns
                     ] []
             ]
@@ -69,13 +79,13 @@ viewFields config =
             [ label [] [ text "Mines:"]
             , input [ class "form-textbox custom-mines"
                     , type' "text"
-                    , value (toString config.mines)
+                    , value (toString model.mines)
                     , onInput UpdateMines
                     ] []
             ]
         ]
 
-viewButtons : Html MsgButton
+viewButtons : Html ButtonMsg
 viewButtons =
     div [ class "buttons" ]
         [ input [ class "form-button ok-btn"
@@ -94,31 +104,46 @@ viewButtons =
 
 -- UPDATE
 
-update : Msg -> Game.Config -> Game.Config
-update msg config =
+update : Msg -> Game.Model -> Game.Model
+update msg gameModel =
     case msg of
-        MsgUpdate updates ->
-            updateConfig updates config
+        MsgUpdate updateInputMsg ->
+            { gameModel | dialog = updateFields updateInputMsg gameModel.dialog }
 
         MsgButton buttons ->
-            updateButton buttons 
+            updateButton buttons gameModel
 
-updateConfig : MsgUpdate -> Game.Config -> Game.Config
-updateConfig update config =
-    case update of
+updateFields : UpdateMsg -> Model -> Model
+updateFields updateMsg model =
+    case updateMsg of
         UpdateRows rows ->
-            { config | rows = Utils.toInt rows }
+            { model | rows = Utils.toInt rows }
 
         UpdateColumns columns ->
-            { config | columns = Utils.toInt columns }
+            { model | columns = Utils.toInt columns }
 
         UpdateMines mines ->
-            { config | mines = Utils.toInt mines }
+            { model | mines = Utils.toInt mines }
 
-updateButton : MsgButton -> Game.Model -> Game.Model
-updateButton buttons game =
-    case buttons of
+updateButton : ButtonMsg -> Game.Model -> Game.Model
+updateButton buttonMsg gameModel =
+    case buttonMsg of
         OK ->
-            { game | dialogOpen = False }
+            { gameModel | 
+                config = updateConfig gameModel.config gameModel.dialog, 
+                dialog = closeDialog gameModel.dialog }
+
         Cancel ->
-            { game | dialogOpen = False }
+            { gameModel | dialog = closeDialog gameModel.dialog }
+
+updateConfig : Game.Config -> Model -> Game.Model
+updateConfig gameConfig model =
+    { gameConfig | 
+        mines = model.mines, 
+        rows = model.rows, 
+        columns = model.columns, 
+        level = Custom }
+
+closeDialog : Model -> Model
+closeDialog model =
+    { model | open = False }

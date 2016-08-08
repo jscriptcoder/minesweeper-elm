@@ -18,18 +18,14 @@ type Msg
 -- MODEL
 
 type alias Model =
-    { level : Int
-    , marks : Bool
-    , timer : Int
+    { timer : Int
     , menuOpen : Bool
     , minefield : Minefield.Model
     }
 
 model : Model
 model =
-    { level = 1
-    , marks = True
-    , timer = 0
+    { timer = 0
     , menuOpen = False
     , minefield = Minefield.model
     }

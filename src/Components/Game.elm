@@ -1,7 +1,8 @@
-module Game exposing (Config, Model, config, model, view)
+module Game exposing (Level, Config, Model, config, model, view)
 
 import Html exposing (div)
 import Html.Attributes exposing (class)
+import Html.App as App
 import Dialog
 import Board
 
@@ -17,12 +18,24 @@ type Msg
 
 -- MODEL
 
+type Level
+    = Beginner
+    | Intermediate
+    | Expert
+    | Custom
+
 type alias Config =
     { mines : Int
     , rows : Int
     , columns : Int
-    , level : Int
+    , level : Level
     , marks : Bool
+    }
+
+type alias Model =
+    { config : Config
+    , dialog : Dialog.Model
+    , board : Board.Model
     }
 
 config : Config
@@ -30,21 +43,14 @@ config =
     { mines = 10
     , rows = 9
     , columns = 9
-    , level = 1
+    , level = Beginner
     , marks = True
-    }
-
-
-type alias Model =
-    { dialogOpen : Bool
-    , config : Config
-    , board : Board.Model
     }
 
 model : Model
 model = 
-    { dialogOpen = False
-    , config = config
+    { config = config
+    , dialog = Dialog.model
     , board = Board.model
     }
 
@@ -55,8 +61,8 @@ model =
 view : Model -> Html Msg
 view model =
     div [ class "game-container" ]
-        [ Dialog.view config model
-        , Board.view model
+        [ App.map DialogMsg (Dialog.view config model)
+        , App.map BoardMsg (Board.view model)
         ]
 
 
@@ -66,3 +72,8 @@ view model =
 update : Msg -> Model -> Model
 update msg model =
     case msg of
+        DialogMsg dialogMsg ->
+            (Dialog.update dialogMsg model, Cmd.none)
+
+        BoardMsg boardMsg ->
+            (Board.update boardMsg model, Cmd.none)
