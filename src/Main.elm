@@ -1,4 +1,3 @@
-import Html exposing (Html, div, text)
 import Html.App exposing (program)
 import Components.Game as Game
 
@@ -7,6 +6,6 @@ main =
     program 
         { init = (Game.model, Cmd.none)
         , view = Game.view
-        , update = \msg model -> (model, Cmd.none)
+        , update = Game.update
         , subscriptions = \model -> Sub.none
         }

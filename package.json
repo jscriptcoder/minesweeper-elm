@@ -1,10 +1,11 @@
 {
   "name": "minesweeper-elm",
   "version": "1.0.0",
-  "description": "Implementation of MineSweeper in Elm",
+  "description": "Implementation of Minesweeper in Elm",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "rimraf dist && webpack",
+    "start": "webpack-dev-server"
   },
   "repository": {
     "type": "git",
@@ -17,16 +18,20 @@
   },
   "homepage": "https://github.com/jscriptcoder/minesweeper-elm#readme",
   "devDependencies": {
+    "copy-webpack-plugin": "^3.0.1",
     "css-loader": "^0.23.1",
     "elm": "^0.17.1",
     "elm-hot-loader": "^0.3.3",
     "elm-webpack-loader": "^3.0.3",
+    "extract-text-webpack-plugin": "^1.0.1",
+    "file-loader": "^0.9.0",
     "html-webpack-plugin": "^2.22.0",
     "node-sass": "^3.8.0",
     "rimraf": "^2.5.4",
     "sass-loader": "^4.0.0",
     "style-loader": "^0.13.1",
     "webpack": "^1.13.1",
-    "webpack-dev-server": "^1.14.1"
+    "webpack-dev-server": "^1.14.1",
+    "webpack-merge": "^0.14.1"
   }
 }

@@ -1,6 +1,6 @@
 module Header exposing (view)
 
-import Html exposing (div)
+import Html exposing (Html, div)
 import Html.Attributes exposing (class)
 
 

@@ -1,18 +1,13 @@
-module Game exposing (Level, Config, Model, config, model, view)
+module Components.Game exposing (Level, Config, Model, config, model, view, update)
 
-import Html exposing (div)
+import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
-import Html.App as App
-import Dialog
-import Board
 
 
 
 -- MESSAGES
 
-type Msg
-    = DialogMsg Dialog.Msg
-    | BoardMsg Board.Msg
+type Msg = Something
 
 
 
@@ -34,8 +29,6 @@ type alias Config =
 
 type alias Model =
     { config : Config
-    , dialog : Dialog.Model
-    , board : Board.Model
     }
 
 config : Config
@@ -50,8 +43,6 @@ config =
 model : Model
 model = 
     { config = config
-    , dialog = Dialog.model
-    , board = Board.model
     }
 
 
@@ -61,19 +52,13 @@ model =
 view : Model -> Html Msg
 view model =
     div [ class "game-container" ]
-        [ App.map DialogMsg (Dialog.view config model)
-        , App.map BoardMsg (Board.view model)
-        ]
+        [ text "Minesweeper!!" ]
 
 
 
 -- UPDATE
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
-        DialogMsg dialogMsg ->
-            (Dialog.update dialogMsg model, Cmd.none)
-
-        BoardMsg boardMsg ->
-            (Board.update boardMsg model, Cmd.none)
+        Something -> (model, Cmd.none)

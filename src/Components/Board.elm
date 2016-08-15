@@ -19,7 +19,7 @@ type Msg
 
 type alias Model =
     { timer : Int
-    , menuOpen : Bool
+    , menu : Menu.Model
     , minefield : Minefield.Model
     }
 

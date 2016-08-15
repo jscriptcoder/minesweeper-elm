@@ -27,7 +27,7 @@ var commonConfig = {
     noParse: /\.elm$/,
     loaders: [
       {
-        test: /\.(eot|ttf|woff|woff2|svg)$/,
+        test: /\.(jpg|gif|svg|png)$/,
         loader: 'file-loader'
       }
     ]
@@ -35,9 +35,7 @@ var commonConfig = {
 
   plugins: [
     new HtmlWebpackPlugin({
-      template: 'src/index.html',
-      inject:   'body',
-      filename: 'index.html'
+      template: 'src/index.html'
     })
   ],
 
@@ -55,6 +53,7 @@ if ( TARGET_ENV === 'development' ) {
     ],
 
     devServer: {
+      port:     3000, 
       inline:   true,
       progress: true
     },
@@ -71,7 +70,6 @@ if ( TARGET_ENV === 'development' ) {
           loaders: [
             'style-loader',
             'css-loader',
-            'postcss-loader',
             'sass-loader'
           ]
         }
@@ -100,7 +98,6 @@ if ( TARGET_ENV === 'production' ) {
           test: /\.(css|scss)$/,
           loader: ExtractTextPlugin.extract( 'style-loader', [
             'css-loader',
-            'postcss-loader',
             'sass-loader'
           ])
         }
@@ -110,12 +107,9 @@ if ( TARGET_ENV === 'production' ) {
     plugins: [
       new CopyWebpackPlugin([
         {
-          from: 'src/img/',
-          to:   'img/'
-        },
-        {
-          from: 'src/favicon.ico'
-        },
+          from: 'src/assets/',
+          to:   'assets/'
+        }
       ]),
 
       new webpack.optimize.OccurenceOrderPlugin(),

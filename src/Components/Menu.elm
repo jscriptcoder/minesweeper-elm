@@ -1,8 +1,9 @@
-module Menu exposing (Msg, view)
+module Menu exposing (Msg, Model, view)
 
 import Html exposing (Html, ul, li, text)
 import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
+import Game
 import Board
 
 
@@ -16,6 +17,13 @@ type Msg
     | LevelExpert
     | OpenCustomDialog
     | CheckMarks
+
+
+
+-- MODEL
+
+type alias Model =
+    { open : Bool }
 
 
 
@@ -37,3 +45,35 @@ view model =
 
 
 -- UPDATE
+
+update : Msg -> Game.Model -> Game.Model
+update msg gameModel =
+    case msg of
+        NewGame ->
+            gameModel
+
+        LevelBeginner ->
+            { gameModel | 
+                config = setLevelBeginner gameModel.config, 
+                board = closeBoardMenu gameModel.board }
+
+        LevelIntermediate ->
+            { gameModel | 
+                config = setLevelIntermediate gameModel.config, 
+                board = closeBoardMenu gameModel.board }
+
+        LevelExpert ->
+            { gameModel | 
+                config = setLevelExpert gameModel.config, 
+                board = closeBoardMenu gameModel.board }
+
+        OpenCustomDialog ->
+
+        CheckMarks ->
+
+closeBoardMenu : Board.Model -> Board.Model
+closeBoardMenu boardModel =
+    let
+        menu = boardModel.model
+    in
+        { boardModel | menu = { menu | open = False } }

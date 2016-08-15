@@ -216,7 +216,7 @@
 	}
 
 	.reset-button {
-		background: url(minesweeper.png) no-repeat;
+		background: url(assets/minesweeper.png) no-repeat;
 		height: 26px;
 		width: 26px;
 		margin: 0 auto;
@@ -241,7 +241,7 @@
 		.cell {
 			width: 16px;
 			height: 16px;
-			background: url(minesweeper.png) no-repeat;
+			background: url(assets/minesweeper.png) no-repeat;
 		}
 
 		.covered         { background-position: 0 -39px; }

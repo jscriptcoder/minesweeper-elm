@@ -37,19 +37,19 @@ type alias Model =
 
 -- VIEW
 
-view : Game.Model -> Html Msg
-view gameModel =
+view : Model -> Html Msg
+view model =
     div [ classList
             [ ("custom-level-dialog", True)
             , ("window-wrapper-outer", True)
-            , ("open", gameModel.dialog.open)
+            , ("open", model.open)
             ]
         ] 
         [ div [ class "window-wrapper-inner" ]
             [ div [ class "window-container" ]
                 [ div [ class "title-bar"] []
                 , div [ class "content" ]
-                    [ App.map UpdateMsg (viewFields model.dialog)
+                    [ App.map UpdateMsg (viewFields model)
                     , App.map ButtonMsg viewButtons
                     ]
                 ]
