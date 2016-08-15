@@ -3,9 +3,6 @@ var webpack           = require( 'webpack' );
 var merge             = require( 'webpack-merge' );
 var HtmlWebpackPlugin = require( 'html-webpack-plugin' );
 var ExtractTextPlugin = require( 'extract-text-webpack-plugin' );
-var CopyWebpackPlugin = require( 'copy-webpack-plugin' );
-
-console.log( 'WEBPACK GO!');
 
 // detemine build env
 var TARGET_ENV = process.env.npm_lifecycle_event === 'build' ? 'production' : 'development';
@@ -53,7 +50,7 @@ if ( TARGET_ENV === 'development' ) {
     ],
 
     devServer: {
-      port:     3000, 
+      port:     3000,
       inline:   true,
       progress: true
     },
@@ -105,17 +102,10 @@ if ( TARGET_ENV === 'production' ) {
     },
 
     plugins: [
-      new CopyWebpackPlugin([
-        {
-          from: 'src/assets/',
-          to:   'assets/'
-        }
-      ]),
-
       new webpack.optimize.OccurenceOrderPlugin(),
 
       // extract CSS into a separate file
-      new ExtractTextPlugin( './[hash].css', { allChunks: true } ),
+      new ExtractTextPlugin( '[hash].css', { allChunks: true } ),
 
       // minify & mangle JS/CSS
       new webpack.optimize.UglifyJsPlugin({
