@@ -46,6 +46,8 @@
 	z-index: 3;
 	width: 200px;
 
+	&.open { display: block; }
+
 	.title-bar { background-position: 0 -110px; }
 
 	.content {
@@ -131,6 +133,8 @@
 		background: #fff;
 		border: 1px solid #aca899;
 		font: 12px arial;
+
+		&.open { display: block; }
 
 		li {
 			display: block;

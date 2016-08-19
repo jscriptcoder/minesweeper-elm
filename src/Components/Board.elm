@@ -1,17 +1,23 @@
-module Board exposing (model, view)
+module Components.Board exposing (Msg, Model, model, view, update)
 
 import Html exposing (Html, div, text)
-import Html.Attributes exposing (class, href)
-import Menu
-import Header
-import Minefield
+import Html.Attributes exposing (class, classList, href)
+import Html.Events exposing (onClick)
+import Html.App as App
+
+import Components.Menu as Menu
+import Components.Header as Header
+import Components.Minefield as Minefield
 
 
 
 -- MESSAGES
 
 type Msg
-    = MenuMsg Menu.Msg
+    = ToggleMenu
+    | MenuMsg Menu.Msg
+    | HeaderMsg Header.Msg
+    | MinefieldMsg Minefield.Msg
 
 
 
@@ -20,13 +26,15 @@ type Msg
 type alias Model =
     { timer : Int
     , menu : Menu.Model
+    , header : Header.Model
     , minefield : Minefield.Model
     }
 
 model : Model
 model =
     { timer = 0
-    , menuOpen = False
+    , menu = Menu.model
+    , header = Header.model
     , minefield = Minefield.model
     }
 
@@ -41,12 +49,38 @@ view model =
             [ div [ class "window-container" ]
                 [ div [ class "title-bar" ] []
                 , div [ class "menu-link-container" ]
-                    [ div [ class "menu-link", href "#" ] [ text "Game" ] ]
+                    [ viewMenuLink model ]
                 , div [ class "board-wrapper" ]
-                    [ Menu.view model
-                    , Header.view model
-                    , Minefield.view model.minefield
+                    [ App.map MenuMsg <| Menu.view model.menu
+                    , App.map HeaderMsg <| Header.view model.header
+                    , App.map MinefieldMsg <| Minefield.view model.minefield
                     ]
                 ]
             ]
         ]
+
+viewMenuLink : Model -> Html Msg
+viewMenuLink model =
+    div [ classList [ ("menu-link", True), ("active", model.menu.open) ]
+        , href "#"
+        , onClick ToggleMenu
+        ] [ text "Game" ]
+
+
+
+-- UPDATE
+
+update : Msg -> Model -> Model
+update msg model =
+    case msg of
+        ToggleMenu ->
+            { model | menu = Menu.toggleOpen model.menu }
+
+        MenuMsg menuMsg ->
+            model
+
+        HeaderMsg headerMsg ->
+            model
+
+        MinefieldMsg minefieldMsg ->
+            model

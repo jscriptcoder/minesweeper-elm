@@ -1,6 +1,6 @@
-module Cell exposing (Model, model, view)
+module Components.Cell exposing (Msg, Model, model, view)
 
-import Html exposing (div)
+import Html exposing (Html, div)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onMouseDown, onMouseUp)
 
@@ -45,5 +45,12 @@ view model =
 
 
 -- UPDATE
+
+update : Msg -> Model -> Model
 update msg model =
     case msg of
+        MouseDown ->
+            model
+
+        MouseUp ->
+            model

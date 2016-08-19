@@ -1,7 +1,25 @@
-module Header exposing (view)
+module Components.Header exposing (Msg, Model, model, view)
 
 import Html exposing (Html, div)
 import Html.Attributes exposing (class)
+
+
+
+-- MESSAGES
+
+type Msg
+    = NoOp
+
+
+
+-- MODEL
+
+type alias Model =
+    {}
+
+model : Model
+model = 
+    {}
 
 
 

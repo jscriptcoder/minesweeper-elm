@@ -1,11 +1,17 @@
-module Dialog exposing (Msg, view)
+module Components.Dialog exposing
+    ( Msg, OutMsg(..)
+    , Model, model 
+    , view, update
+    , toggleOpen
+    )
 
 import Html exposing (Html, div, p, label, input, text)
 import Html.Attributes exposing (class, classList, type', value)
 import Html.Events exposing (onInput, onClick)
 import Html.App as App
-import Utils
-import Game
+
+import Components.Config as Config
+import Components.Utils as Utils
 
 
 
@@ -21,8 +27,13 @@ type Button
     | Cancel
 
 type Msg
-    = UpdateMsg UpdateInput
+    = ToggleOpen
+    | UpdateMsg UpdateInput
     | ButtonMsg Button
+
+type OutMsg -- for communication child -> parent
+    = SaveCustomLevel
+    | DoNothing
 
 
 
@@ -33,6 +44,14 @@ type alias Model =
     , rows : Int
     , columns : Int
     , mines : Int
+    }
+
+model : Model
+model = 
+    { open = False
+    , rows = 9
+    , columns = 9
+    , mines = 10
     }
 
 -- VIEW
@@ -49,14 +68,14 @@ view model =
             [ div [ class "window-container" ]
                 [ div [ class "title-bar"] []
                 , div [ class "content" ]
-                    [ App.map UpdateMsg (viewFields model)
+                    [ App.map UpdateMsg <| viewFields model
                     , App.map ButtonMsg viewButtons
                     ]
                 ]
             ]
         ]
 
-viewFields : Model -> Html UpdateMsg
+viewFields : Model -> Html UpdateInput
 viewFields model =
     div [ class "fields" ]
         [ p []
@@ -85,7 +104,7 @@ viewFields model =
             ]
         ]
 
-viewButtons : Html ButtonMsg
+viewButtons : Html Button
 viewButtons =
     div [ class "buttons" ]
         [ input [ class "form-button ok-btn"
@@ -104,18 +123,21 @@ viewButtons =
 
 -- UPDATE
 
-update : Msg -> Game.Model -> Game.Model
-update msg gameModel =
+update : Msg -> Model -> (Model, OutMsg)
+update msg model =
     case msg of
-        MsgUpdate updateInputMsg ->
-            { gameModel | dialog = updateFields updateInputMsg gameModel.dialog }
+        ToggleOpen ->
+            (toggleOpen model, DoNothing)
 
-        MsgButton buttons ->
-            updateButton buttons gameModel
+        UpdateMsg updateInput ->
+            (updateFields updateInput model, DoNothing)
 
-updateFields : UpdateMsg -> Model -> Model
-updateFields updateMsg model =
-    case updateMsg of
+        ButtonMsg button ->
+            updateButton button model
+
+updateFields : UpdateInput -> Model -> Model
+updateFields updateInput model =
+    case updateInput of
         UpdateRows rows ->
             { model | rows = Utils.toInt rows }
 
@@ -125,25 +147,19 @@ updateFields updateMsg model =
         UpdateMines mines ->
             { model | mines = Utils.toInt mines }
 
-updateButton : ButtonMsg -> Game.Model -> Game.Model
-updateButton buttonMsg gameModel =
-    case buttonMsg of
-        OK ->
-            { gameModel | 
-                config = updateConfig gameModel.config gameModel.dialog, 
-                dialog = closeDialog gameModel.dialog }
+updateButton : Button -> Model -> (Model, OutMsg)
+updateButton buttonMsg model =
+        case buttonMsg of
+            OK ->
+                ({ model | open = False }, SaveCustomLevel)
 
-        Cancel ->
-            { gameModel | dialog = closeDialog gameModel.dialog }
+            Cancel ->
+                ({ model | open = False }, DoNothing)
 
-updateConfig : Game.Config -> Model -> Game.Model
-updateConfig gameConfig model =
-    { gameConfig | 
-        mines = model.mines, 
-        rows = model.rows, 
-        columns = model.columns, 
-        level = Custom }
 
-closeDialog : Model -> Model
-closeDialog model =
-    { model | open = False }
+
+-- Helpers
+
+toggleOpen : Model -> Model
+toggleOpen model =
+    { model | open = not model.open }

@@ -1,48 +1,36 @@
-module Components.Game exposing (Level, Config, Model, config, model, view, update)
+module Components.Game exposing (..)
 
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
+import Html.App as App
+
+import Components.Config as Config
+import Components.Dialog as Dialog
+import Components.Board as Board
 
 
 
 -- MESSAGES
 
-type Msg = Something
+type Msg
+    = DialogMsg Dialog.Msg
+    | BoardMsg Board.Msg
 
 
 
 -- MODEL
 
-type Level
-    = Beginner
-    | Intermediate
-    | Expert
-    | Custom
-
-type alias Config =
-    { mines : Int
-    , rows : Int
-    , columns : Int
-    , level : Level
-    , marks : Bool
-    }
-
 type alias Model =
-    { config : Config
-    }
-
-config : Config
-config =
-    { mines = 10
-    , rows = 9
-    , columns = 9
-    , level = Beginner
-    , marks = True
+    { config : Config.Model
+    , dialog : Dialog.Model
+    , board : Board.Model
     }
 
 model : Model
 model = 
-    { config = config
+    { config = Config.model
+    , dialog = Dialog.model
+    , board = Board.model
     }
 
 
@@ -52,7 +40,9 @@ model =
 view : Model -> Html Msg
 view model =
     div [ class "game-container" ]
-        [ text "Minesweeper!!" ]
+        [ App.map DialogMsg <| Dialog.view model.dialog
+        , App.map BoardMsg <| Board.view model.board
+        ]
 
 
 
@@ -61,4 +51,33 @@ view model =
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
-        Something -> (model, Cmd.none)
+        DialogMsg dialogMsg ->
+            let
+                ( dialogModel 
+                , dialogOutMsg
+                ) = Dialog.update dialogMsg model.dialog
+            in
+                (processDialogOutMsg dialogOutMsg model dialogModel, Cmd.none)
+
+        BoardMsg boardMsg ->
+            ({ model | board = Board.update boardMsg model.board }, Cmd.none)
+
+
+
+-- Helpers
+
+processDialogOutMsg : Dialog.OutMsg -> Model -> Dialog.Model -> Model
+processDialogOutMsg dialogOutMsg model dialogModel =
+    case dialogOutMsg of
+        Dialog.SaveCustomLevel ->
+            { model |
+                config = Config.customLevel
+                            model.config
+                            dialogModel.mines
+                            dialogModel.rows
+                            dialogModel.columns,
+                dialog = dialogModel
+            }
+
+        Dialog.DoNothing ->
+            { model | dialog = dialogModel }

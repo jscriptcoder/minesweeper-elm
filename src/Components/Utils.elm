@@ -1,21 +1,7 @@
-module Utils exposing (onRightClick, toInt)
+module Components.Utils exposing (toInt)
 
 import String
 import Result
-
-
-
-type alias onRightClickOptions =
-    { stopPropagation : Bool
-    , preventDefault : Bool
-    }
-
-
-onRightClick : onRightClickOptions
-onRightClick = 
-    { stopPropagation : False
-    , preventDefault : True
-    }
 
 
 

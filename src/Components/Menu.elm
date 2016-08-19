@@ -1,17 +1,21 @@
-module Menu exposing (Msg, Model, view)
+module Components.Menu exposing
+    ( Msg
+    , Model, model
+    , view, update
+    , toggleOpen
+    )
 
 import Html exposing (Html, ul, li, text)
 import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
-import Game
-import Board
 
 
 
 -- MESSAGES
 
 type Msg
-    = NewGame
+    = ToggleOpen
+    | NewGame
     | LevelBeginner
     | LevelIntermediate
     | LevelExpert
@@ -25,55 +29,59 @@ type Msg
 type alias Model =
     { open : Bool }
 
+model : Model
+model = 
+    { open = False
+    }
 
 
 -- VIEW
 
-view : Board.Model -> Html Msg
+view : Model -> Html Msg
 view model =
-    ul [ classList [ ("menu", True), ("open", model.menuOpen) ] ]
+    ul [ classList [ ("menu", True), ("open", model.open) ] ]
     [ li [ class "menu-new", onClick NewGame ] [ text "New" ]
     , li [ class "menu-divider" ] []
     , li [ class "game-level menu-beginner checked", onClick LevelBeginner ] [ text "Beginner" ]
     , li [ class "game-level menu-intermediate", onClick LevelIntermediate ] [ text "Intermediate" ]
-    , li [ class "game-level menu-expert" onClick LevelExpert ] [ text "Expert" ]
-    , li [ class "game-level menu-custom" onClick OpenCustomDialog ] [ text "Custom..." ]
+    , li [ class "game-level menu-expert", onClick LevelExpert ] [ text "Expert" ]
+    , li [ class "game-level menu-custom", onClick OpenCustomDialog ] [ text "Custom..." ]
     , li [ class "menu-divider" ] []
-    , li [ class "menu-marks checked" onClick CheckMarks ] [ text "Marks (?)" ]
+    , li [ class "menu-marks checked", onClick CheckMarks ] [ text "Marks (?)" ]
     ]
 
 
 
 -- UPDATE
 
-update : Msg -> Game.Model -> Game.Model
-update msg gameModel =
+update : Msg -> Model -> Model
+update msg model =
     case msg of
+        ToggleOpen ->
+            toggleOpen model
+
         NewGame ->
-            gameModel
+            model
 
         LevelBeginner ->
-            { gameModel | 
-                config = setLevelBeginner gameModel.config, 
-                board = closeBoardMenu gameModel.board }
+            model
 
         LevelIntermediate ->
-            { gameModel | 
-                config = setLevelIntermediate gameModel.config, 
-                board = closeBoardMenu gameModel.board }
+            model
 
         LevelExpert ->
-            { gameModel | 
-                config = setLevelExpert gameModel.config, 
-                board = closeBoardMenu gameModel.board }
+            model
 
         OpenCustomDialog ->
+            model
 
         CheckMarks ->
+            model
 
-closeBoardMenu : Board.Model -> Board.Model
-closeBoardMenu boardModel =
-    let
-        menu = boardModel.model
-    in
-        { boardModel | menu = { menu | open = False } }
+
+
+-- Helpers
+
+toggleOpen : Model -> Model
+toggleOpen model =
+    { model | open = not model.open }
