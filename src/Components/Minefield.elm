@@ -4,8 +4,6 @@ import Html exposing (Html, div)
 import Html.Attributes exposing (class)
 import List exposing (repeat)
 
-import Components.Cell as Cell
-
 
 
 -- MESSAGES
@@ -45,5 +43,3 @@ generateField : Int -> Int -> Html
 generateField rows columns =
     repeat rows
         <| div [ class "row" ]
-        <| repeat columns
-        <| Cell.view Cell.model

@@ -1,5 +1,5 @@
 module Components.Menu exposing
-    ( Msg
+    ( Msg, OutMsg(..)
     , Model, model
     , view, update
     , toggleOpen
@@ -14,13 +14,14 @@ import Html.Events exposing (onClick)
 -- MESSAGES
 
 type Msg
-    = ToggleOpen
-    | NewGame
-    | LevelBeginner
-    | LevelIntermediate
-    | LevelExpert
-    | OpenCustomDialog
+    = NewGame
+    | BeginnerLevel
+    | IntermediateLevel
+    | ExpertLevel
+    | CustomLevel
     | CheckMarks
+
+type OutMsg = OpenCustomDialog
 
 
 
@@ -42,10 +43,10 @@ view model =
     ul [ classList [ ("menu", True), ("open", model.open) ] ]
     [ li [ class "menu-new", onClick NewGame ] [ text "New" ]
     , li [ class "menu-divider" ] []
-    , li [ class "game-level menu-beginner checked", onClick LevelBeginner ] [ text "Beginner" ]
-    , li [ class "game-level menu-intermediate", onClick LevelIntermediate ] [ text "Intermediate" ]
-    , li [ class "game-level menu-expert", onClick LevelExpert ] [ text "Expert" ]
-    , li [ class "game-level menu-custom", onClick OpenCustomDialog ] [ text "Custom..." ]
+    , li [ class "game-level menu-beginner checked", onClick BeginnerLevel ] [ text "Beginner" ]
+    , li [ class "game-level menu-intermediate", onClick IntermediateLevel ] [ text "Intermediate" ]
+    , li [ class "game-level menu-expert", onClick ExpertLevel ] [ text "Expert" ]
+    , li [ class "game-level menu-custom", onClick CustomLevel ] [ text "Custom..." ]
     , li [ class "menu-divider" ] []
     , li [ class "menu-marks checked", onClick CheckMarks ] [ text "Marks (?)" ]
     ]
@@ -54,29 +55,26 @@ view model =
 
 -- UPDATE
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> (Model, Maybe OutMsg)
 update msg model =
     case msg of
-        ToggleOpen ->
-            toggleOpen model
-
         NewGame ->
-            model
+            (model, Nothing)
 
-        LevelBeginner ->
-            model
+        BeginnerLevel ->
+            (model, Nothing)
 
-        LevelIntermediate ->
-            model
+        IntermediateLevel ->
+            (model, Nothing)
 
-        LevelExpert ->
-            model
+        ExpertLevel ->
+            (model, Nothing)
 
-        OpenCustomDialog ->
-            model
+        CustomLevel ->
+            (model, Just OpenCustomDialog)
 
         CheckMarks ->
-            model
+            (model, Nothing)
 
 
 

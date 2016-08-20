@@ -60,16 +60,29 @@ update msg model =
                 (processDialogOutMsg dialogOutMsg model dialogModel, Cmd.none)
 
         BoardMsg boardMsg ->
-            ({ model | board = Board.update boardMsg model.board }, Cmd.none)
+            let
+                ( boardModel
+                , boardOutMsg
+                ) = Board.update boardMsg model.board
+            in
+                (processBoardOutMsg boardOutMsg model boardModel, Cmd.none)
+
+
+
+-- SUBSCRIPTIONS
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none
 
 
 
 -- Helpers
 
-processDialogOutMsg : Dialog.OutMsg -> Model -> Dialog.Model -> Model
+processDialogOutMsg : Maybe Dialog.OutMsg -> Model -> Dialog.Model -> Model
 processDialogOutMsg dialogOutMsg model dialogModel =
     case dialogOutMsg of
-        Dialog.SaveCustomLevel ->
+        Just Dialog.SaveCustomLevel ->
             { model |
                 config = Config.customLevel
                             model.config
@@ -79,5 +92,17 @@ processDialogOutMsg dialogOutMsg model dialogModel =
                 dialog = dialogModel
             }
 
-        Dialog.DoNothing ->
+        Nothing ->
             { model | dialog = dialogModel }
+
+processBoardOutMsg : Maybe Board.OutMsg -> Model -> Board.Model -> Model
+processBoardOutMsg boardOutMsg model boardModel =
+    case boardOutMsg of
+        Just Board.OpenCustomDialog ->
+            { model |
+                dialog = Dialog.toggleOpen model.dialog,
+                board = boardModel
+            }
+
+        Nothing ->
+            { model | board = boardModel }

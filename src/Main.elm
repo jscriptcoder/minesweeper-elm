@@ -7,5 +7,5 @@ main =
         { init = (Game.model, Cmd.none)
         , view = Game.view
         , update = Game.update
-        , subscriptions = \model -> Sub.none
+        , subscriptions = Game.subscriptions
         }

@@ -27,13 +27,11 @@ type Button
     | Cancel
 
 type Msg
-    = ToggleOpen
-    | UpdateMsg UpdateInput
+    = UpdateMsg UpdateInput
     | ButtonMsg Button
 
-type OutMsg -- for communication child -> parent
-    = SaveCustomLevel
-    | DoNothing
+-- for communication child -> parent
+type OutMsg = SaveCustomLevel
 
 
 
@@ -123,14 +121,11 @@ viewButtons =
 
 -- UPDATE
 
-update : Msg -> Model -> (Model, OutMsg)
+update : Msg -> Model -> (Model, Maybe OutMsg)
 update msg model =
     case msg of
-        ToggleOpen ->
-            (toggleOpen model, DoNothing)
-
         UpdateMsg updateInput ->
-            (updateFields updateInput model, DoNothing)
+            (updateFields updateInput model, Nothing)
 
         ButtonMsg button ->
             updateButton button model
@@ -147,14 +142,14 @@ updateFields updateInput model =
         UpdateMines mines ->
             { model | mines = Utils.toInt mines }
 
-updateButton : Button -> Model -> (Model, OutMsg)
+updateButton : Button -> Model -> (Model, Maybe OutMsg)
 updateButton buttonMsg model =
         case buttonMsg of
             OK ->
-                ({ model | open = False }, SaveCustomLevel)
+                ({ model | open = False }, Just SaveCustomLevel)
 
             Cancel ->
-                ({ model | open = False }, DoNothing)
+                ({ model | open = False }, Nothing)
 
 
 
