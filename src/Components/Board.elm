@@ -9,9 +9,10 @@ import Html.Attributes exposing (class, classList, href)
 import Html.Events exposing (onClick)
 import Html.App as App
 
+import Components.Config as Config
 import Components.Menu as Menu
 import Components.Header as Header
-
+import Components.Minefield as Minefield
 
 
 -- MESSAGES
@@ -20,30 +21,32 @@ type Msg
     = ToggleMenu
     | MenuMsg Menu.Msg
     | HeaderMsg Header.Msg
+    | MinefieldMsg Minefield.Msg
 
-type OutMsg = OpenCustomDialog
+type OutMsg
+    = MenuOutMsg Menu.Msg
 
 -- MODEL
 
 type alias Model =
-    { timer : Int
-    , menu : Menu.Model
+    { menu : Menu.Model
     , header : Header.Model
+    , minefield : Minefield.Model
     }
 
 model : Model
 model =
-    { timer = 0
-    , menu = Menu.model
+    { menu = Menu.model
     , header = Header.model
+    , minefield = Minefield.model
     }
 
 
 
 -- VIEW
 
-view : Model -> Html Msg
-view model =
+view : Model -> Config.Model -> Html Msg
+view model config =
     div [ class "board-window window-wrapper-outer" ]
         [ div [ class "window-wrapper-inner" ]
             [ div [ class "window-container" ]
@@ -51,8 +54,9 @@ view model =
                 , div [ class "menu-link-container" ]
                     [ viewMenuLink model ]
                 , div [ class "board-wrapper" ]
-                    [ App.map MenuMsg <| Menu.view model.menu
-                    , App.map HeaderMsg <| Header.view model.header
+                    [ App.map MenuMsg <| Menu.view model.menu config
+                    , App.map HeaderMsg <| Header.view model.header config
+                    , App.map MinefieldMsg <| Minefield.view model.minefield config
                     ]
                 ]
             ]
@@ -77,16 +81,12 @@ update msg model =
 
         MenuMsg menuMsg ->
             let
-                ( menuModel 
-                , menuOutMsg
-                ) = Menu.update menuMsg model.menu
+                menuModel = Menu.update menuMsg model.menu
             in
-                ({ model | menu = menuModel }, Maybe.map menu2boardOutMsg menuOutMsg)
+                ({ model | menu = menuModel }, Just (MenuOutMsg menuMsg))
 
         HeaderMsg headerMsg ->
             (model, Nothing)
 
-menu2boardOutMsg : Menu.OutMsg -> OutMsg
-menu2boardOutMsg menuOutMsg =
-    case menuOutMsg of
-        Menu.OpenCustomDialog -> OpenCustomDialog
+        MinefieldMsg minefieldMsg ->
+            (model, Nothing)

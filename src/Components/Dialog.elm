@@ -47,9 +47,9 @@ type alias Model =
 model : Model
 model = 
     { open = False
-    , rows = 9
-    , columns = 9
-    , mines = 10
+    , rows = .rows Config.model
+    , columns = .columns Config.model
+    , mines = .mines Config.model
     }
 
 -- VIEW
@@ -128,7 +128,10 @@ update msg model =
             (updateFields updateInput model, Nothing)
 
         ButtonMsg button ->
-            updateButton button model
+            let
+                newModel = toggleOpen model
+            in
+                updateButton button newModel
 
 updateFields : UpdateInput -> Model -> Model
 updateFields updateInput model =
@@ -146,10 +149,10 @@ updateButton : Button -> Model -> (Model, Maybe OutMsg)
 updateButton buttonMsg model =
         case buttonMsg of
             OK ->
-                ({ model | open = False }, Just SaveCustomLevel)
+                (model, Just SaveCustomLevel)
 
             Cancel ->
-                ({ model | open = False }, Nothing)
+                (model, Nothing)
 
 
 

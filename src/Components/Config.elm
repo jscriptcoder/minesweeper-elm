@@ -1,9 +1,7 @@
 module Components.Config exposing
     ( Model, model
-    , beginnerLevel
-    , intermediateLevel
-    , expertLevel
-    , customLevel
+    , beginnerLevel, intermediateLevel, expertLevel, customLevel
+    , isBeginnerLevel, isIntermediateLevel, isExpertLevel, isCustomLevel
     )
 
 
@@ -33,6 +31,10 @@ model =
     , marks = True
     }
 
+
+
+-- Helpers
+
 beginnerLevel : Model -> Model
 beginnerLevel model =
     { model | 
@@ -41,6 +43,9 @@ beginnerLevel model =
         columns = 9, 
         level = Beginner
     }
+
+isBeginnerLevel : Level -> Bool
+isBeginnerLevel level = level == Beginner
 
 intermediateLevel : Model -> Model
 intermediateLevel model =
@@ -51,14 +56,20 @@ intermediateLevel model =
         level = Intermediate
     }
 
+isIntermediateLevel : Level -> Bool
+isIntermediateLevel level = level == Intermediate
+
 expertLevel : Model -> Model
 expertLevel model =
     { model | 
         mines = 99, 
         rows = 16, 
         columns = 30, 
-        level = Intermediate
+        level = Expert
     }
+
+isExpertLevel : Level -> Bool
+isExpertLevel level = level == Expert
 
 customLevel : Model -> Int -> Int -> Int -> Model
 customLevel model mines rows columns =
@@ -68,3 +79,6 @@ customLevel model mines rows columns =
         columns = columns, 
         level = Custom
     }
+
+isCustomLevel : Level -> Bool
+isCustomLevel level = level == Custom

@@ -7,6 +7,7 @@ import Html.App as App
 import Components.Config as Config
 import Components.Dialog as Dialog
 import Components.Board as Board
+import Components.Menu as Menu
 
 
 
@@ -41,7 +42,7 @@ view : Model -> Html Msg
 view model =
     div [ class "game-container" ]
         [ App.map DialogMsg <| Dialog.view model.dialog
-        , App.map BoardMsg <| Board.view model.board
+        , App.map BoardMsg <| Board.view model.board model.config
         ]
 
 
@@ -56,16 +57,20 @@ update msg model =
                 ( dialogModel 
                 , dialogOutMsg
                 ) = Dialog.update dialogMsg model.dialog
+
+                newModel = { model | dialog = dialogModel }
             in
-                (processDialogOutMsg dialogOutMsg model dialogModel, Cmd.none)
+                (processDialogOutMsg dialogOutMsg newModel dialogModel, Cmd.none)
 
         BoardMsg boardMsg ->
             let
                 ( boardModel
                 , boardOutMsg
                 ) = Board.update boardMsg model.board
+
+                newModel = { model | board = boardModel }
             in
-                (processBoardOutMsg boardOutMsg model boardModel, Cmd.none)
+                (processBoardOutMsg boardOutMsg newModel boardModel, Cmd.none)
 
 
 
@@ -83,26 +88,39 @@ processDialogOutMsg : Maybe Dialog.OutMsg -> Model -> Dialog.Model -> Model
 processDialogOutMsg dialogOutMsg model dialogModel =
     case dialogOutMsg of
         Just Dialog.SaveCustomLevel ->
-            { model |
-                config = Config.customLevel
-                            model.config
-                            dialogModel.mines
-                            dialogModel.rows
-                            dialogModel.columns,
-                dialog = dialogModel
+            { model | config = Config.customLevel
+                        model.config
+                        dialogModel.mines
+                        dialogModel.rows
+                        dialogModel.columns
             }
 
-        Nothing ->
-            { model | dialog = dialogModel }
+        Nothing -> model
 
 processBoardOutMsg : Maybe Board.OutMsg -> Model -> Board.Model -> Model
 processBoardOutMsg boardOutMsg model boardModel =
     case boardOutMsg of
-        Just Board.OpenCustomDialog ->
-            { model |
-                dialog = Dialog.toggleOpen model.dialog,
-                board = boardModel
-            }
+        Just (Board.MenuOutMsg menuMsg) ->
+            processMenuOutMsg menuMsg model boardModel
 
-        Nothing ->
+        Nothing -> model
+
+processMenuOutMsg : Menu.Msg -> Model -> Board.Model -> Model
+processMenuOutMsg menuOutMsg model boardModel =
+    case menuOutMsg of
+        Menu.NewGame ->
             { model | board = boardModel }
+
+        Menu.BeginnerLevel ->
+            { model | config = Config.beginnerLevel model.config }
+
+        Menu.IntermediateLevel ->
+            { model | config = Config.intermediateLevel model.config }
+
+        Menu.ExpertLevel ->
+            { model | config = Config.expertLevel model.config }
+
+        Menu.CustomLevel ->
+            { model | dialog = Dialog.toggleOpen model.dialog }
+
+        Menu.CheckMarks -> model

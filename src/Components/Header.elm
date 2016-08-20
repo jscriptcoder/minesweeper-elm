@@ -3,6 +3,8 @@ module Components.Header exposing (Msg, Model, model, view)
 import Html exposing (Html, div)
 import Html.Attributes exposing (class)
 
+import Components.Config as Config
+
 
 
 -- MESSAGES
@@ -14,18 +16,17 @@ type Msg
 
 -- MODEL
 
-type alias Model =
-    {}
+type alias Model = { timer : Int }
 
 model : Model
-model = 
-    {}
+model = { timer = 0 }
 
 
 
 -- VIEW
 
-view model = 
+view : Model -> Config.Model -> Html Msg
+view model config = 
     div [ class "header-wrapper" ]
         [ div [ class "header-container" ]
             [ div [ class "header" ]

@@ -2,7 +2,10 @@ module Components.Minefield exposing (Msg, Model, model, view)
 
 import Html exposing (Html, div)
 import Html.Attributes exposing (class)
-import List exposing (repeat)
+import List exposing (repeat, length, map)
+
+import Components.Config as Config
+import Components.Cell as Cell
 
 
 
@@ -16,30 +19,27 @@ type Msg
 -- MODEL
 
 type alias Model =
-    { rows : Int
-    , columns : Int
-    }
+    List (List Cell.Model)
 
 model : Model
-model = 
-    { rows = 9
-    , columns = 9
-    }
+model =
+    Cell.model
+        |> repeat (.columns Config.model)
+        |> repeat (.rows Config.model)
 
 
 
 -- VIEW
 
-view : Model -> Html Msg
-view model =
+view : Model -> Config.Model -> Html Msg
+view model config =
     div [ class "minefield" ] 
-        <| generateField model.rows model.columns
+        <| map viewCells model
 
+viewCells : List Cell.Model -> List (Html Msg)
+viewCells cells =
+    map Cell.view cells
 
 
 -- Helpers
 
-generateField : Int -> Int -> Html
-generateField rows columns =
-    repeat rows
-        <| div [ class "row" ]

@@ -1,5 +1,5 @@
 module Components.Menu exposing
-    ( Msg, OutMsg(..)
+    ( Msg(..)
     , Model, model
     , view, update
     , toggleOpen
@@ -8,6 +8,8 @@ module Components.Menu exposing
 import Html exposing (Html, ul, li, text)
 import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
+
+import Components.Config as Config
 
 
 
@@ -20,9 +22,6 @@ type Msg
     | ExpertLevel
     | CustomLevel
     | CheckMarks
-
-type OutMsg = OpenCustomDialog
-
 
 
 -- MODEL
@@ -38,43 +37,40 @@ model =
 
 -- VIEW
 
-view : Model -> Html Msg
-view model =
+view : Model -> Config.Model -> Html Msg
+view model config =
     ul [ classList [ ("menu", True), ("open", model.open) ] ]
     [ li [ class "menu-new", onClick NewGame ] [ text "New" ]
     , li [ class "menu-divider" ] []
-    , li [ class "game-level menu-beginner checked", onClick BeginnerLevel ] [ text "Beginner" ]
-    , li [ class "game-level menu-intermediate", onClick IntermediateLevel ] [ text "Intermediate" ]
-    , li [ class "game-level menu-expert", onClick ExpertLevel ] [ text "Expert" ]
-    , li [ class "game-level menu-custom", onClick CustomLevel ] [ text "Custom..." ]
+    , li [ classList 
+            [ ("game-level menu-beginner", True)
+            , ("checked", Config.isBeginnerLevel config.level)
+            ], onClick BeginnerLevel ] [ text "Beginner" ]
+    , li [ classList
+            [ ("game-level menu-intermediate", True)
+            , ("checked", Config.isIntermediateLevel config.level)
+            ], onClick IntermediateLevel ] [ text "Intermediate" ]
+    , li [ classList
+            [ ("game-level menu-expert", True)
+            , ("checked", Config.isExpertLevel config.level)
+            ], onClick ExpertLevel ] [ text "Expert" ]
+    , li [ classList 
+            [ ("game-level menu-custom", True)
+            , ("checked", Config.isCustomLevel config.level)
+            ], onClick CustomLevel ] [ text "Custom..." ]
     , li [ class "menu-divider" ] []
-    , li [ class "menu-marks checked", onClick CheckMarks ] [ text "Marks (?)" ]
+    , li [ classList
+            [ ("menu-marks", True)
+            , ("checked", config.marks)
+            ], onClick CheckMarks ] [ text "Marks (?)" ]
     ]
 
 
 
 -- UPDATE
 
-update : Msg -> Model -> (Model, Maybe OutMsg)
-update msg model =
-    case msg of
-        NewGame ->
-            (model, Nothing)
-
-        BeginnerLevel ->
-            (model, Nothing)
-
-        IntermediateLevel ->
-            (model, Nothing)
-
-        ExpertLevel ->
-            (model, Nothing)
-
-        CustomLevel ->
-            (model, Just OpenCustomDialog)
-
-        CheckMarks ->
-            (model, Nothing)
+update : Msg -> Model -> Model
+update msg model = toggleOpen model
 
 
 
