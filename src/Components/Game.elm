@@ -88,12 +88,16 @@ processDialogOutMsg : Maybe Dialog.OutMsg -> Model -> Dialog.Model -> Model
 processDialogOutMsg dialogOutMsg model dialogModel =
     case dialogOutMsg of
         Just Dialog.SaveCustomLevel ->
-            { model | config = Config.customLevel
-                        model.config
-                        dialogModel.mines
-                        dialogModel.rows
-                        dialogModel.columns
-            }
+            let newConfig = Config.customLevel
+                                model.config
+                                dialogModel.mines
+                                dialogModel.rows
+                                dialogModel.columns
+            in
+                { model | 
+                    config = newConfig,
+                    board = Board.createMinefield newConfig
+                }
 
         Nothing -> model
 
@@ -109,16 +113,31 @@ processMenuOutMsg : Menu.Msg -> Model -> Board.Model -> Model
 processMenuOutMsg menuOutMsg model boardModel =
     case menuOutMsg of
         Menu.NewGame ->
-            { model | board = boardModel }
+            { model | board = Board.createMinefield model.config }
 
         Menu.BeginnerLevel ->
-            { model | config = Config.beginnerLevel model.config }
+            let newConfig = Config.beginnerLevel model.config
+            in
+                { model | 
+                    config = newConfig,
+                    board = Board.createMinefield newConfig
+                }
 
         Menu.IntermediateLevel ->
-            { model | config = Config.intermediateLevel model.config }
+            let newConfig = Config.intermediateLevel model.config
+            in
+                { model | 
+                    config = newConfig,
+                    board = Board.createMinefield newConfig
+                }
 
         Menu.ExpertLevel ->
-            { model | config = Config.expertLevel model.config }
+            let newConfig = Config.expertLevel model.config
+            in
+                { model | 
+                    config = newConfig,
+                    board = Board.createMinefield newConfig
+                }
 
         Menu.CustomLevel ->
             { model | dialog = Dialog.toggleOpen model.dialog }

@@ -2,6 +2,7 @@ module Components.Board exposing
     ( Msg, OutMsg(..)
     , Model, model
     , view, update
+    , createMinefield
     )
 
 import Html exposing (Html, div, text)
@@ -56,7 +57,7 @@ view model config =
                 , div [ class "board-wrapper" ]
                     [ App.map MenuMsg <| Menu.view model.menu config
                     , App.map HeaderMsg <| Header.view model.header config
-                    , App.map MinefieldMsg <| Minefield.view model.minefield config
+                    , App.map MinefieldMsg <| Minefield.view model.minefield
                     ]
                 ]
             ]
@@ -80,8 +81,7 @@ update msg model =
             ({ model | menu = Menu.toggleOpen model.menu }, Nothing)
 
         MenuMsg menuMsg ->
-            let
-                menuModel = Menu.update menuMsg model.menu
+            let menuModel = Menu.update menuMsg model.menu
             in
                 ({ model | menu = menuModel }, Just (MenuOutMsg menuMsg))
 
@@ -90,3 +90,11 @@ update msg model =
 
         MinefieldMsg minefieldMsg ->
             (model, Nothing)
+
+
+
+-- Helpers
+
+createMinefield : Config.Model -> Model
+createMinefield config =
+    { model | minefield = Minefield.create config }

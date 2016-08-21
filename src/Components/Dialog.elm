@@ -128,10 +128,8 @@ update msg model =
             (updateFields updateInput model, Nothing)
 
         ButtonMsg button ->
-            let
-                newModel = toggleOpen model
-            in
-                updateButton button newModel
+            let newModel = toggleOpen model
+            in updateButton button newModel
 
 updateFields : UpdateInput -> Model -> Model
 updateFields updateInput model =
