@@ -57,8 +57,7 @@ model =
 view : Model -> Html Msg
 view model =
     div [ classList
-            [ ("custom-level-dialog", True)
-            , ("window-wrapper-outer", True)
+            [ ("custom-level-dialog window-wrapper-outer", True)
             , ("open", model.open)
             ]
         ] 
