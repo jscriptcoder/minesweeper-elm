@@ -41,6 +41,5 @@ update msg model =
       ({ model | action = action }, Cmd.none)
 
 after txt =
-  
   Task.perform AfterAction AfterAction (Task.succeed txt)
   
