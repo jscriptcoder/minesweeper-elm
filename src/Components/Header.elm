@@ -2,6 +2,7 @@ module Components.Header exposing (Msg, Model, model, view)
 
 import Html exposing (Html, div)
 import Html.Attributes exposing (class)
+import String exposing (padLeft, slice)
 
 import Components.Config as Config
 
@@ -39,11 +40,14 @@ view model config =
 
 viewMineCount : Model -> Config.Model -> Html Msg
 viewMineCount model config =
-    div [ class "mine-count numbers" ]
-        [ div [ class "digit hundres t0" ] []
-        , div [ class "digit tens t0" ] []
-        , div [ class "digit ones t0" ] []
-        ]
+    let
+        (hundres, tens, ones) = getMinesDigits config.mines
+    in
+        div [ class "mine-count numbers" ]
+            [ div [ class ("digit hundres t" ++ hundres) ] []
+            , div [ class ("digit tens t" ++ tens) ] []
+            , div [ class ("digit ones t" ++ ones) ] []
+            ]
 
 viewTimer : Model -> Html Msg
 viewTimer model =
@@ -52,3 +56,19 @@ viewTimer model =
         , div [ class "digit tens t0" ] []
         , div [ class "digit ones t0" ] []
         ]
+
+
+
+-- Helpers
+
+getMinesDigits : Int -> (String, String, String)
+getMinesDigits mines =
+    let
+        minesDigits = mines
+                            |> toString
+                            |> padLeft 3 '0'
+    in
+        ( slice 0 1 minesDigits
+        , slice 1 2 minesDigits
+        , slice 2 3 minesDigits
+        )

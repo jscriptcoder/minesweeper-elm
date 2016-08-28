@@ -202,23 +202,26 @@
 		.timer { right: 0; }
 	}
 
-	.numbers .digit {
-		float: left;
-		width: 13px;
-		height: 23px;
-		background: url(assets/minesweeper.png) no-repeat;
+	.numbers {
 
-		.t0 { background-position: 0 0; }
-		.t1 { background-position: -13px 0; }
-		.t2 { background-position: -26px 0; }
-		.t3 { background-position: -39px 0; }
-		.t4 { background-position: -52px 0; }
-		.t5 { background-position: -65px 0; }
-		.t6 { background-position: -78px 0; }
-		.t7 { background-position: -91px 0; }
-		.t8 { background-position: -104px 0; }
-		.t9 { background-position: -117px 0; }
-		.tm { background-position: -130px 0; }
+		.digit {
+			float: left;
+			width: 13px;
+			height: 23px;
+			background: url(assets/minesweeper.png) no-repeat;
+
+			&.t0 { background-position: 0 0; }
+			&.t1 { background-position: -13px 0; }
+			&.t2 { background-position: -26px 0; }
+			&.t3 { background-position: -39px 0; }
+			&.t4 { background-position: -52px 0; }
+			&.t5 { background-position: -65px 0; }
+			&.t6 { background-position: -78px 0; }
+			&.t7 { background-position: -91px 0; }
+			&.t8 { background-position: -104px 0; }
+			&.t9 { background-position: -117px 0; }
+			&.tm { background-position: -130px 0; }
+		}
 	}
 
 	.reset-button {
