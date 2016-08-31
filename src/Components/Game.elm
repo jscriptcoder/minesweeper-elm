@@ -1,7 +1,8 @@
 module Components.Game exposing (..)
 
 import Html exposing (Html, div, text)
-import Html.Attributes exposing (class)
+import Html.Attributes exposing (class, classList)
+import Html.Events exposing (onClick)
 import Html.App as App
 
 import Components.Config as Config
@@ -16,6 +17,7 @@ import Components.Menu as Menu
 type Msg
     = DialogMsg Dialog.Msg
     | BoardMsg Board.Msg
+    | ClickAway
 
 
 
@@ -41,11 +43,17 @@ model =
 view : Model -> Html Msg
 view model =
     div [ class "game-container" ]
-        [ App.map DialogMsg <| Dialog.view model.dialog
+        [ viewClickerAway model
+        , App.map DialogMsg <| Dialog.view model.dialog
         , App.map BoardMsg <| Board.view model.board model.config
         ]
 
-
+viewClickerAway : Model -> Html Msg
+viewClickerAway model =
+    div [ classList
+        [ ("clicker-away", True)
+        , ("ready", model.board.menu.open)
+        ], onClick ClickAway ] []
 
 -- UPDATE
 
@@ -72,6 +80,9 @@ update msg model =
             in
                 (processBoardOutMsg boardOutMsg newModel boardModel, Cmd.none)
 
+        ClickAway ->
+            update (BoardMsg Board.ToggleMenu) model
+
 
 
 -- SUBSCRIPTIONS
@@ -96,7 +107,7 @@ processDialogOutMsg dialogOutMsg model dialogModel =
             in
                 { model | 
                     config = newConfig,
-                    board = Board.createMinefield newConfig
+                    board = Board.createMinefield model.board newConfig
                 }
 
         Nothing -> model
@@ -113,14 +124,14 @@ processMenuOutMsg : Menu.Msg -> Model -> Board.Model -> Model
 processMenuOutMsg menuOutMsg model boardModel =
     case menuOutMsg of
         Menu.NewGame ->
-            { model | board = Board.createMinefield model.config }
+            { model | board = Board.createMinefield model.board model.config }
 
         Menu.BeginnerLevel ->
             let newConfig = Config.beginnerLevel model.config
             in
                 { model | 
                     config = newConfig,
-                    board = Board.createMinefield newConfig
+                    board = Board.createMinefield model.board newConfig
                 }
 
         Menu.IntermediateLevel ->
@@ -128,7 +139,7 @@ processMenuOutMsg menuOutMsg model boardModel =
             in
                 { model | 
                     config = newConfig,
-                    board = Board.createMinefield newConfig
+                    board = Board.createMinefield model.board newConfig
                 }
 
         Menu.ExpertLevel ->
@@ -136,7 +147,7 @@ processMenuOutMsg menuOutMsg model boardModel =
             in
                 { model | 
                     config = newConfig,
-                    board = Board.createMinefield newConfig
+                    board = Board.createMinefield model.board newConfig
                 }
 
         Menu.CustomLevel ->

@@ -1,6 +1,23 @@
 // Inspiration: https://codepen.io/joelbyrd/pen/hdHKF
 
-.game-container { position: relative; }
+.game-container {
+	position: relative;
+
+	// We used this guy to simulate clicking away
+	// and close the menu
+	.clicker-away {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		z-index: 0;
+
+		&.ready {
+			z-index: 1;
+		}
+	}
+}
 
 .window-wrapper-outer {
 	border: 1px solid;

@@ -1,5 +1,5 @@
 module Components.Board exposing
-    ( Msg, OutMsg(..)
+    ( Msg(..), OutMsg(..)
     , Model, model
     , view, update
     , createMinefield
@@ -16,6 +16,7 @@ import Components.Header as Header
 import Components.Minefield as Minefield
 
 
+
 -- MESSAGES
 
 type Msg
@@ -24,8 +25,11 @@ type Msg
     | HeaderMsg Header.Msg
     | MinefieldMsg Minefield.Msg
 
+-- for communication child -> parent
 type OutMsg
     = MenuOutMsg Menu.Msg
+
+
 
 -- MODEL
 
@@ -95,6 +99,6 @@ update msg model =
 
 -- Helpers
 
-createMinefield : Config.Model -> Model
-createMinefield config =
+createMinefield : Model -> Config.Model -> Model
+createMinefield model config =
     { model | minefield = Minefield.create config }

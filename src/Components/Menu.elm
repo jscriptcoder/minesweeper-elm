@@ -70,7 +70,8 @@ view model config =
 -- UPDATE
 
 update : Msg -> Model -> Model
-update msg model = toggleOpen model
+update msg model =
+    toggleOpen model
 
 
 
