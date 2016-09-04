@@ -17,6 +17,7 @@ import Components.Utils as Utils
 
 -- MESSAGES
 
+
 type UpdateInput
     = UpdateRows String
     | UpdateColumns String
@@ -37,6 +38,7 @@ type OutMsg = SaveCustomLevel
 
 -- MODEL
 
+
 type alias Model =
     { open : Bool
     , rows : Int
@@ -53,6 +55,7 @@ model =
     }
 
 -- VIEW
+
 
 view : Model -> Html Msg
 view model =
@@ -120,6 +123,7 @@ viewButtons =
 
 -- UPDATE
 
+
 update : Msg -> Model -> (Model, Maybe OutMsg)
 update msg model =
     case msg of
@@ -127,8 +131,10 @@ update msg model =
             (updateFields updateInput model, Nothing)
 
         ButtonMsg button ->
-            let newModel = toggleOpen model
-            in updateButton button newModel
+            let
+                newModel = toggleOpen model
+            in
+                updateButton button newModel
 
 updateFields : UpdateInput -> Model -> Model
 updateFields updateInput model =
@@ -154,6 +160,7 @@ updateButton buttonMsg model =
 
 
 -- Helpers
+
 
 toggleOpen : Model -> Model
 toggleOpen model =

@@ -14,6 +14,7 @@ import Components.Menu as Menu
 
 -- MESSAGES
 
+
 type Msg
     = DialogMsg Dialog.Msg
     | BoardMsg Board.Msg
@@ -22,6 +23,7 @@ type Msg
 
 
 -- MODEL
+
 
 type alias Model =
     { config : Config.Model
@@ -40,6 +42,7 @@ model =
 
 -- VIEW
 
+
 view : Model -> Html Msg
 view model =
     div [ class "game-container" ]
@@ -56,6 +59,7 @@ viewClickerAway model =
         ], onClick ClickAway ] []
 
 -- UPDATE
+
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -74,18 +78,22 @@ update msg model =
             let
                 ( boardModel
                 , boardOutMsg
-                ) = Board.update boardMsg model.board
+                ) = Board.update boardMsg model.board model.config
 
                 newModel = { model | board = boardModel }
             in
-                (processBoardOutMsg boardOutMsg newModel boardModel, Cmd.none)
+                (processBoardOutMsg boardOutMsg newModel, Cmd.none)
 
         ClickAway ->
-            update (BoardMsg Board.ToggleMenu) model
+            if model.board.menu.open then
+                update (BoardMsg Board.ToggleMenu) model
+            else
+                (model, Cmd.none)
 
 
 
 -- SUBSCRIPTIONS
+
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
@@ -94,6 +102,7 @@ subscriptions model =
 
 
 -- Helpers
+
 
 processDialogOutMsg : Maybe Dialog.OutMsg -> Model -> Dialog.Model -> Model
 processDialogOutMsg dialogOutMsg model dialogModel =
@@ -110,24 +119,27 @@ processDialogOutMsg dialogOutMsg model dialogModel =
                     board = Board.createMinefield model.board newConfig
                 }
 
-        Nothing -> model
+        Nothing ->
+            model
 
-processBoardOutMsg : Maybe Board.OutMsg -> Model -> Board.Model -> Model
-processBoardOutMsg boardOutMsg model boardModel =
+processBoardOutMsg : Maybe Board.OutMsg -> Model -> Model
+processBoardOutMsg boardOutMsg model =
     case boardOutMsg of
         Just (Board.MenuOutMsg menuMsg) ->
-            processMenuOutMsg menuMsg model boardModel
+            processMenuMsg menuMsg model
 
-        Nothing -> model
+        Nothing ->
+            model
 
-processMenuOutMsg : Menu.Msg -> Model -> Board.Model -> Model
-processMenuOutMsg menuOutMsg model boardModel =
-    case menuOutMsg of
+processMenuMsg : Menu.Msg -> Model -> Model
+processMenuMsg menuMsg model =
+    case menuMsg of
         Menu.NewGame ->
             { model | board = Board.createMinefield model.board model.config }
 
         Menu.BeginnerLevel ->
-            let newConfig = Config.beginnerLevel model.config
+            let
+                newConfig = Config.beginnerLevel model.config
             in
                 { model | 
                     config = newConfig,
@@ -135,7 +147,8 @@ processMenuOutMsg menuOutMsg model boardModel =
                 }
 
         Menu.IntermediateLevel ->
-            let newConfig = Config.intermediateLevel model.config
+            let
+                newConfig = Config.intermediateLevel model.config
             in
                 { model | 
                     config = newConfig,
@@ -143,7 +156,8 @@ processMenuOutMsg menuOutMsg model boardModel =
                 }
 
         Menu.ExpertLevel ->
-            let newConfig = Config.expertLevel model.config
+            let
+                newConfig = Config.expertLevel model.config
             in
                 { model | 
                     config = newConfig,
@@ -153,4 +167,5 @@ processMenuOutMsg menuOutMsg model boardModel =
         Menu.CustomLevel ->
             { model | dialog = Dialog.toggleOpen model.dialog }
 
-        Menu.CheckMarks -> model
+        Menu.CheckMarks ->
+            model

@@ -8,6 +8,7 @@ import Html.Events exposing (onMouseDown, onMouseUp)
 
 -- MESSAGES
 
+
 type Msg
     = MouseDown
     | MouseUp
@@ -15,6 +16,7 @@ type Msg
 
 
 -- MODEL
+
 
 type alias Model =
     { open : Bool
@@ -35,6 +37,7 @@ model =
 
 -- VIEW
 
+
 view : Model -> Html Msg
 view model =
     div [ class "cell covered"
@@ -45,6 +48,7 @@ view model =
 
 
 -- UPDATE
+
 
 update : Msg -> Model -> Model
 update msg model =

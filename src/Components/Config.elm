@@ -8,6 +8,7 @@ module Components.Config exposing
 
 -- MODEL
 
+
 type Level
     = Beginner
     | Intermediate
@@ -34,6 +35,7 @@ model =
 
 
 -- Helpers
+
 
 beginnerLevel : Model -> Model
 beginnerLevel model =

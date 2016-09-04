@@ -15,6 +15,7 @@ import Components.Config as Config
 
 -- MESSAGES
 
+
 type Msg
     = NewGame
     | BeginnerLevel
@@ -26,6 +27,7 @@ type Msg
 
 -- MODEL
 
+
 type alias Model =
     { open : Bool }
 
@@ -36,6 +38,7 @@ model =
 
 
 -- VIEW
+
 
 view : Model -> Config.Model -> Html Msg
 view model config =
@@ -69,6 +72,7 @@ view model config =
 
 -- UPDATE
 
+
 update : Msg -> Model -> Model
 update msg model =
     toggleOpen model
@@ -76,6 +80,7 @@ update msg model =
 
 
 -- Helpers
+
 
 toggleOpen : Model -> Model
 toggleOpen model =

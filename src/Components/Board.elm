@@ -19,6 +19,7 @@ import Components.Minefield as Minefield
 
 -- MESSAGES
 
+
 type Msg
     = ToggleMenu
     | MenuMsg Menu.Msg
@@ -50,6 +51,7 @@ model =
 
 -- VIEW
 
+
 view : Model -> Config.Model -> Html Msg
 view model config =
     div [ class "board-window window-wrapper-outer" ]
@@ -78,19 +80,25 @@ viewMenuLink model =
 
 -- UPDATE
 
-update : Msg -> Model -> (Model, Maybe OutMsg)
-update msg model =
+
+update : Msg -> Model -> Config.Model -> (Model, Maybe OutMsg)
+update msg model config =
     case msg of
         ToggleMenu ->
             ({ model | menu = Menu.toggleOpen model.menu }, Nothing)
 
         MenuMsg menuMsg ->
-            let menuModel = Menu.update menuMsg model.menu
+            let
+                menuModel = Menu.update menuMsg model.menu
             in
                 ({ model | menu = menuModel }, Just (MenuOutMsg menuMsg))
 
         HeaderMsg headerMsg ->
-            (model, Nothing)
+            let
+                headerModel = Header.update headerMsg model.header
+                newModel = { model | header = headerModel }
+            in
+                (processHeaderMsg headerMsg newModel config, Nothing)
 
         MinefieldMsg minefieldMsg ->
             (model, Nothing)
@@ -99,6 +107,16 @@ update msg model =
 
 -- Helpers
 
+
 createMinefield : Model -> Config.Model -> Model
 createMinefield model config =
-    { model | minefield = Minefield.create config }
+    { model | 
+        minefield = Minefield.create config,
+        header = Header.update Header.ResetGame model.header }
+
+processHeaderMsg : Header.Msg -> Model -> Config.Model -> Model
+processHeaderMsg headerMsg model config =
+    if headerMsg == Header.ResetGame then
+        createMinefield model config
+    else
+        model
