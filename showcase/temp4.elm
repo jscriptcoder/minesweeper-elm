@@ -57,7 +57,7 @@ doSanitationFrom list result min max =
   in
     case Debug.log "maybe head" maybeHead of
       Just head ->
-        case Debug.log "maybe tail:" maybeTail of
+        case Debug.log "maybe tail" maybeTail of
           Just tail ->
             if List.member head tail || List.member head result then
               if (head + 1) <= max then
