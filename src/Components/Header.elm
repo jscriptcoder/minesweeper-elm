@@ -1,22 +1,24 @@
-module Components.Header exposing
-    ( Msg(..), Face(..)
-    , Model, model
-    , view
-    , update
-    )
+module Components.Header
+    exposing
+        ( Msg(..)
+        , Face(..)
+        , Model
+        , model
+        , view
+        , update
+        )
 
 import Html exposing (Html, div)
 import Html.Attributes exposing (class)
-import Html.Events exposing
-    ( onMouseDown
-    , onMouseUp
-    , onMouseLeave
-    , onClick
-    )
+import Html.Events
+    exposing
+        ( onMouseDown
+        , onMouseUp
+        , onMouseLeave
+        , onClick
+        )
 import String exposing (padLeft, slice)
-
 import Components.Config as Config
-
 
 
 -- MESSAGES
@@ -28,11 +30,13 @@ type Msg
     | FaceLeave
     | ResetGame
 
+
 type Face
     = Smile
     | Pressed
     | Surprised
     | Sad
+
 
 
 -- MODEL
@@ -42,6 +46,7 @@ type alias Model =
     { timer : Int
     , face : Face
     }
+
 
 model : Model
 model =
@@ -55,7 +60,7 @@ model =
 
 
 view : Model -> Config.Model -> Html Msg
-view model config = 
+view model config =
     div [ class "header-wrapper" ]
         [ div [ class "header-container" ]
             [ div [ class "header" ]
@@ -66,16 +71,19 @@ view model config =
             ]
         ]
 
+
 viewMineCount : Model -> Config.Model -> Html Msg
 viewMineCount model config =
     let
-        (hundres, tens, ones) = getDigits config.mines
+        ( hundres, tens, ones ) =
+            getDigits config.mines
     in
         div [ class "mine-count numbers" ]
             [ div [ class <| "digit hundres t" ++ hundres ] []
             , div [ class <| "digit tens t" ++ tens ] []
             , div [ class <| "digit ones t" ++ ones ] []
             ]
+
 
 viewFace : Face -> Html Msg
 viewFace face =
@@ -85,12 +93,15 @@ viewFace face =
         , onMouseUp FaceUp
         , onMouseLeave FaceLeave
         , onClick ResetGame
-        ] []
+        ]
+        []
+
 
 viewTimer : Int -> Html Msg
 viewTimer timer =
     let
-        (hundres, tens, ones) = getDigits timer
+        ( hundres, tens, ones ) =
+            getDigits timer
     in
         div [ class "timer numbers" ]
             [ div [ class <| "digit hundres t" ++ hundres ] []
@@ -126,22 +137,31 @@ update msg model =
 -- Helpers
 
 
-getDigits : Int -> (String, String, String)
+getDigits : Int -> ( String, String, String )
 getDigits num =
     let
-        digits = num
-                    |> toString
-                    |> padLeft 3 '0'
+        digits =
+            num
+                |> toString
+                |> padLeft 3 '0'
     in
         ( slice 0 1 digits
         , slice 1 2 digits
         , slice 2 3 digits
         )
 
+
 typeFace : Face -> String
 typeFace face =
     case face of
-        Smile -> "smile"
-        Pressed -> "pressed"
-        Surprised -> "surprised"
-        Sad -> "sad"
+        Smile ->
+            "smile"
+
+        Pressed ->
+            "pressed"
+
+        Surprised ->
+            "surprised"
+
+        Sad ->
+            "sad"

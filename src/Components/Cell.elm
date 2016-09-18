@@ -5,7 +5,6 @@ import Html.Attributes exposing (class)
 import Html.Events exposing (onMouseDown, onMouseUp)
 
 
-
 -- MESSAGES
 
 
@@ -23,10 +22,11 @@ type alias Model =
     , marked : Bool
     , bomb : Bool
     , value : Int
-    } 
+    }
+
 
 model : Model
-model = 
+model =
     { open = False
     , marked = False
     , bomb = False
@@ -40,10 +40,12 @@ model =
 
 view : Model -> Html Msg
 view model =
-    div [ class "cell covered"
+    div
+        [ class "cell covered"
         , onMouseDown MouseDown
         , onMouseUp MouseUp
-        ] []
+        ]
+        []
 
 
 

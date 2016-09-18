@@ -1,20 +1,22 @@
-module Components.Board exposing
-    ( Msg(..), OutMsg(..)
-    , Model, model
-    , view, update
-    , createMinefield
-    )
+module Components.Board
+    exposing
+        ( Msg(..)
+        , OutMsg(..)
+        , Model
+        , model
+        , view
+        , update
+        , createMinefield
+        )
 
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class, classList, href)
 import Html.Events exposing (onClick)
 import Html.App as App
-
 import Components.Config as Config
 import Components.Menu as Menu
 import Components.Header as Header
 import Components.Minefield as Minefield
-
 
 
 -- MESSAGES
@@ -26,7 +28,11 @@ type Msg
     | HeaderMsg Header.Msg
     | MinefieldMsg Minefield.Msg
 
+
+
 -- for communication child -> parent
+
+
 type OutMsg
     = MenuOutMsg Menu.Msg
 
@@ -34,11 +40,13 @@ type OutMsg
 
 -- MODEL
 
+
 type alias Model =
     { menu : Menu.Model
     , header : Header.Model
     , minefield : Minefield.Model
     }
+
 
 model : Model
 model =
@@ -69,39 +77,46 @@ view model config =
             ]
         ]
 
+
 viewMenuLink : Model -> Html Msg
 viewMenuLink model =
-    div [ classList [ ("menu-link", True), ("active", model.menu.open) ]
+    div
+        [ classList [ ( "menu-link", True ), ( "active", model.menu.open ) ]
         , href "#"
         , onClick ToggleMenu
-        ] [ text "Game" ]
+        ]
+        [ text "Game" ]
 
 
 
 -- UPDATE
 
 
-update : Msg -> Model -> Config.Model -> (Model, Maybe OutMsg)
+update : Msg -> Model -> Config.Model -> ( Model, Maybe OutMsg )
 update msg model config =
     case msg of
         ToggleMenu ->
-            ({ model | menu = Menu.toggleOpen model.menu }, Nothing)
+            ( { model | menu = Menu.toggleOpen model.menu }, Nothing )
 
         MenuMsg menuMsg ->
             let
-                menuModel = Menu.update menuMsg model.menu
+                menuModel =
+                    Menu.update menuMsg model.menu
             in
-                ({ model | menu = menuModel }, Just (MenuOutMsg menuMsg))
+                ( { model | menu = menuModel }, Just (MenuOutMsg menuMsg) )
 
         HeaderMsg headerMsg ->
             let
-                headerModel = Header.update headerMsg model.header
-                newModel = { model | header = headerModel }
+                headerModel =
+                    Header.update headerMsg model.header
+
+                newModel =
+                    { model | header = headerModel }
             in
-                (processHeaderMsg headerMsg newModel config, Nothing)
+                ( processHeaderMsg headerMsg newModel config, Nothing )
 
         MinefieldMsg minefieldMsg ->
-            (model, Nothing)
+            ( model, Nothing )
 
 
 
@@ -110,9 +125,11 @@ update msg model config =
 
 createMinefield : Model -> Config.Model -> Model
 createMinefield model config =
-    { model | 
-        minefield = Minefield.create config,
-        header = Header.update Header.ResetGame model.header }
+    { model
+        | minefield = Minefield.create config
+        , header = Header.update Header.ResetGame model.header
+    }
+
 
 processHeaderMsg : Header.Msg -> Model -> Config.Model -> Model
 processHeaderMsg headerMsg model config =
