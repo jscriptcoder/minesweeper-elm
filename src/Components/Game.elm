@@ -4,17 +4,23 @@ import Html exposing (Html, div, text)
 import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
 import Html.App as App
+import Task exposing (perform)
+import Time exposing (now)
+import Random exposing (Seed, initialSeed)
 import Components.Config as Config
 import Components.Dialog as Dialog
 import Components.Board as Board
 import Components.Menu as Menu
+import Debug
 
 
 -- MESSAGES
 
 
 type Msg
-    = DialogMsg Dialog.Msg
+    = TimeFail
+    | Timestamp Float
+    | DialogMsg Dialog.Msg
     | BoardMsg Board.Msg
     | ClickAway
 
@@ -70,31 +76,44 @@ viewClickerAway model =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        Timestamp time ->
+            let
+                config =
+                    model.config
+
+                newConfig =
+                    { config | seed = initialSeed <| round time }
+            in
+                ( { model | config = Config.generateRandomMines newConfig }, Cmd.none )
+
         DialogMsg dialogMsg ->
             let
-                ( dialogModel, dialogOutMsg ) =
+                dialogModel =
                     Dialog.update dialogMsg model.dialog
 
                 newModel =
                     { model | dialog = dialogModel }
             in
-                ( processDialogOutMsg dialogOutMsg newModel dialogModel, Cmd.none )
+                ( processDialogMsg dialogMsg newModel dialogModel, Cmd.none )
 
         BoardMsg boardMsg ->
             let
-                ( boardModel, boardOutMsg ) =
+                boardModel =
                     Board.update boardMsg model.board model.config
 
                 newModel =
                     { model | board = boardModel }
             in
-                ( processBoardOutMsg boardOutMsg newModel, Cmd.none )
+                ( processBoardMsg boardMsg newModel, Cmd.none )
 
         ClickAway ->
             if model.board.menu.open then
                 update (BoardMsg Board.ToggleMenu) model
             else
                 ( model, Cmd.none )
+
+        _ ->
+            ( model, Cmd.none )
 
 
 
@@ -110,34 +129,42 @@ subscriptions model =
 -- Helpers
 
 
-processDialogOutMsg : Maybe Dialog.OutMsg -> Model -> Dialog.Model -> Model
-processDialogOutMsg dialogOutMsg model dialogModel =
-    case dialogOutMsg of
-        Just (Dialog.SaveCustomLevel) ->
-            let
-                newConfig =
-                    Config.customLevel
-                        model.config
-                        dialogModel.mines
-                        dialogModel.rows
-                        dialogModel.columns
-            in
-                { model
-                    | config = newConfig
-                    , board = Board.createMinefield model.board newConfig
-                }
+requestTime : Cmd Msg
+requestTime =
+    perform (\_ -> TimeFail) Timestamp now
 
-        Nothing ->
+
+processDialogMsg : Dialog.Msg -> Model -> Dialog.Model -> Model
+processDialogMsg dialogMsg model dialogModel =
+    case dialogMsg of
+        Dialog.ButtonMsg buttonMsg ->
+            if buttonMsg == Dialog.Ok then
+                let
+                    newConfig =
+                        Config.customLevel
+                            model.config
+                            dialogModel.mines
+                            dialogModel.rows
+                            dialogModel.columns
+                in
+                    { model
+                        | config = newConfig
+                        , board = Board.createMinefield model.board newConfig
+                    }
+            else
+                model
+
+        _ ->
             model
 
 
-processBoardOutMsg : Maybe Board.OutMsg -> Model -> Model
-processBoardOutMsg boardOutMsg model =
-    case boardOutMsg of
-        Just (Board.MenuOutMsg menuMsg) ->
+processBoardMsg : Board.Msg -> Model -> Model
+processBoardMsg boardMsg model =
+    case boardMsg of
+        Board.MenuMsg menuMsg ->
             processMenuMsg menuMsg model
 
-        Nothing ->
+        _ ->
             model
 
 
@@ -145,7 +172,14 @@ processMenuMsg : Menu.Msg -> Model -> Model
 processMenuMsg menuMsg model =
     case menuMsg of
         Menu.NewGame ->
-            { model | board = Board.createMinefield model.board model.config }
+            let
+                newConfig =
+                    Config.generateRandomMines model.config
+            in
+                { model
+                    | config = newConfig
+                    , board = Board.createMinefield model.board newConfig
+                }
 
         Menu.BeginnerLevel ->
             let

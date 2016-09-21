@@ -1,8 +1,16 @@
-module Components.Minefield exposing (Msg, Model, model, view, create)
+module Components.Minefield
+    exposing
+        ( Msg
+        , Model
+        , model
+        , view
+        , update
+        , create
+        )
 
 import Html exposing (Html, div)
 import Html.Attributes exposing (class)
-import List exposing (repeat, length, map)
+import List exposing (..)
 import Html.App as App
 import Components.Config as Config
 import Components.Cell as Cell
@@ -48,11 +56,79 @@ viewCell cell =
 
 
 
+-- UPDATE
+
+
+update : Msg -> Model -> Model
+update msg model =
+    case msg of
+        CellMsg cellMsg ->
+            model
+
+
+
 -- Helpers
 
 
-create : Config.Model -> List (List Cell.Model)
+create : Config.Model -> Model
 create config =
-    Cell.model
-        |> repeat (.columns config)
-        |> repeat (.rows config)
+    let
+        columns =
+            config.columns
+
+        rows =
+            config.rows
+
+        len =
+            columns * rows
+
+        randomMines =
+            config.randomMines
+
+        cells =
+            repeat len Cell.model
+
+        ids =
+            [1..len]
+
+        cellsWithId =
+            map2 (\id cell -> { cell | id = id }) ids cells
+
+        cellsWithMines =
+            map
+                (\cell ->
+                    if member cell.id randomMines then
+                        { cell | mine = True }
+                    else
+                        cell
+                )
+                cellsWithId
+    in
+        list2Matrix (reverse cellsWithMines) columns
+
+
+list2Matrix : List Cell.Model -> Int -> Model
+list2Matrix cells columns =
+    list2MatrixHelper cells columns []
+
+
+list2MatrixHelper : List Cell.Model -> Int -> Model -> Model
+list2MatrixHelper cells columns matrix =
+    let
+        cellsColumn =
+            take columns cells
+    in
+        if length cellsColumn > 0 then
+            let
+                newCells =
+                    drop columns cells
+
+                reverseColumn =
+                    reverse cellsColumn
+
+                newMatrix =
+                    reverseColumn :: matrix
+            in
+                list2MatrixHelper newCells columns newMatrix
+        else
+            matrix

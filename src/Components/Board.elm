@@ -1,7 +1,6 @@
 module Components.Board
     exposing
         ( Msg(..)
-        , OutMsg(..)
         , Model
         , model
         , view
@@ -27,14 +26,6 @@ type Msg
     | MenuMsg Menu.Msg
     | HeaderMsg Header.Msg
     | MinefieldMsg Minefield.Msg
-
-
-
--- for communication child -> parent
-
-
-type OutMsg
-    = MenuOutMsg Menu.Msg
 
 
 
@@ -92,18 +83,18 @@ viewMenuLink model =
 -- UPDATE
 
 
-update : Msg -> Model -> Config.Model -> ( Model, Maybe OutMsg )
+update : Msg -> Model -> Config.Model -> Model
 update msg model config =
     case msg of
         ToggleMenu ->
-            ( { model | menu = Menu.toggleOpen model.menu }, Nothing )
+            { model | menu = Menu.toggleOpen model.menu }
 
         MenuMsg menuMsg ->
             let
                 menuModel =
                     Menu.update menuMsg model.menu
             in
-                ( { model | menu = menuModel }, Just (MenuOutMsg menuMsg) )
+                { model | menu = menuModel }
 
         HeaderMsg headerMsg ->
             let
@@ -113,10 +104,10 @@ update msg model config =
                 newModel =
                     { model | header = headerModel }
             in
-                ( processHeaderMsg headerMsg newModel config, Nothing )
+                processHeaderMsg headerMsg newModel config
 
         MinefieldMsg minefieldMsg ->
-            ( model, Nothing )
+            { model | minefield = Minefield.update minefieldMsg model.minefield }
 
 
 

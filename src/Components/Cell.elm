@@ -1,8 +1,20 @@
-module Components.Cell exposing (Msg, Model, model, view)
+module Components.Cell
+    exposing
+        ( Msg(..)
+        , State(..)
+        , Model
+        , model
+        , view
+        )
 
 import Html exposing (Html, div)
 import Html.Attributes exposing (class)
-import Html.Events exposing (onMouseDown, onMouseUp)
+import Html.Events
+    exposing
+        ( onMouseDown
+        , onMouseUp
+        , onMouseLeave
+        )
 
 
 -- MESSAGES
@@ -11,6 +23,16 @@ import Html.Events exposing (onMouseDown, onMouseUp)
 type Msg
     = MouseDown
     | MouseUp
+    | MouseLeave
+
+
+type State
+    = Opened
+    | Closed
+    | Pressed
+    | Flag
+    | Question
+    | Mine
 
 
 
@@ -18,18 +40,18 @@ type Msg
 
 
 type alias Model =
-    { open : Bool
-    , marked : Bool
-    , bomb : Bool
+    { id : Int
+    , state : State
+    , mine : Bool
     , value : Int
     }
 
 
 model : Model
 model =
-    { open = False
-    , marked = False
-    , bomb = False
+    { id = 0
+    , state = Closed
+    , mine = False
     , value = 0
     }
 
@@ -41,9 +63,10 @@ model =
 view : Model -> Html Msg
 view model =
     div
-        [ class "cell covered"
+        [ class <| "cell " ++ (typeCell model)
         , onMouseDown MouseDown
         , onMouseUp MouseUp
+        , onMouseLeave MouseLeave
         ]
         []
 
@@ -56,7 +79,52 @@ update : Msg -> Model -> Model
 update msg model =
     case msg of
         MouseDown ->
-            model
+            if model.state == Closed then
+                { model | state = Pressed }
+            else
+                model
 
         MouseUp ->
-            model
+            if model.state == Pressed then
+                -- todo: calculate value
+                { model
+                    | value = 0
+                    , state = Opened
+                }
+            else
+                model
+
+        MouseLeave ->
+            if model.state == Pressed then
+                { model | state = Closed }
+            else
+                model
+
+
+
+-- Helpers
+
+
+typeCell : Model -> String
+typeCell model =
+    if model.mine == True then
+        "mine"
+    else
+        case model.state of
+            Pressed ->
+                "mines0"
+
+            Opened ->
+                "mines" ++ (toString model.value)
+
+            Closed ->
+                "covered"
+
+            Flag ->
+                "flag"
+
+            Question ->
+                "question"
+
+            Mine ->
+                "Mine"

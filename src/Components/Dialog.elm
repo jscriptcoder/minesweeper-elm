@@ -1,7 +1,7 @@
 module Components.Dialog
     exposing
-        ( Msg
-        , OutMsg(..)
+        ( Msg(..)
+        , Button(..)
         , Model
         , model
         , view
@@ -27,21 +27,13 @@ type UpdateInput
 
 
 type Button
-    = OK
+    = Ok
     | Cancel
 
 
 type Msg
     = UpdateMsg UpdateInput
     | ButtonMsg Button
-
-
-
--- for communication child -> parent
-
-
-type OutMsg
-    = SaveCustomLevel
 
 
 
@@ -132,7 +124,7 @@ viewButtons =
             [ class "form-button ok-btn"
             , type' "button"
             , value "OK"
-            , onClick OK
+            , onClick Ok
             ]
             []
         , input
@@ -149,18 +141,14 @@ viewButtons =
 -- UPDATE
 
 
-update : Msg -> Model -> ( Model, Maybe OutMsg )
+update : Msg -> Model -> Model
 update msg model =
     case msg of
         UpdateMsg updateInput ->
-            ( updateFields updateInput model, Nothing )
+            updateFields updateInput model
 
         ButtonMsg button ->
-            let
-                newModel =
-                    toggleOpen model
-            in
-                updateButton button newModel
+            toggleOpen model
 
 
 updateFields : UpdateInput -> Model -> Model
@@ -174,16 +162,6 @@ updateFields updateInput model =
 
         UpdateMines mines ->
             { model | mines = Utils.toInt mines }
-
-
-updateButton : Button -> Model -> ( Model, Maybe OutMsg )
-updateButton buttonMsg model =
-    case buttonMsg of
-        OK ->
-            ( model, Just SaveCustomLevel )
-
-        Cancel ->
-            ( model, Nothing )
 
 
 
