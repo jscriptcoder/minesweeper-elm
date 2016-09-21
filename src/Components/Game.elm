@@ -11,14 +11,14 @@ import Components.Config as Config
 import Components.Dialog as Dialog
 import Components.Board as Board
 import Components.Menu as Menu
-import Debug
+import Components.Header as Header
 
 
 -- MESSAGES
 
 
 type Msg
-    = TimeFail
+    = NoOp
     | Timestamp Float
     | DialogMsg Dialog.Msg
     | BoardMsg Board.Msg
@@ -131,7 +131,7 @@ subscriptions model =
 
 requestTime : Cmd Msg
 requestTime =
-    perform (\_ -> TimeFail) Timestamp now
+    perform (\_ -> NoOp) Timestamp now
 
 
 processDialogMsg : Dialog.Msg -> Model -> Dialog.Model -> Model
@@ -163,6 +163,12 @@ processBoardMsg boardMsg model =
     case boardMsg of
         Board.MenuMsg menuMsg ->
             processMenuMsg menuMsg model
+
+        Board.HeaderMsg headerMsg ->
+            if headerMsg == Header.ResetGame then
+                processMenuMsg Menu.NewGame model
+            else
+                model
 
         _ ->
             model

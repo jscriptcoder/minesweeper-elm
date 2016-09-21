@@ -14,9 +14,22 @@ module Components.Config
         , toggleMarks
         )
 
-import Random exposing (Seed, Generator, initialSeed, list, int, step)
-import List exposing (head, tail, member, append)
-import Debug
+import Random
+    exposing
+        ( Seed
+        , Generator
+        , initialSeed
+        , list
+        , int
+        , step
+        )
+import List
+    exposing
+        ( head
+        , tail
+        , member
+        , append
+        )
 
 
 -- MODEL

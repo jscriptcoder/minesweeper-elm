@@ -5,6 +5,7 @@ module Components.Cell
         , Model
         , model
         , view
+        , update
         )
 
 import Html exposing (Html, div)
@@ -14,16 +15,19 @@ import Html.Events
         ( onMouseDown
         , onMouseUp
         , onMouseLeave
+        , onClick
         )
+import Components.Utils exposing (onRightClick)
 
 
 -- MESSAGES
 
 
 type Msg
-    = MouseDown
-    | MouseUp
-    | MouseLeave
+    = MouseDown Model
+    | MouseUp Model
+    | MouseLeave Model
+    | RightClick Model
 
 
 type State
@@ -33,6 +37,7 @@ type State
     | Flag
     | Question
     | Mine
+    | MineHit
 
 
 
@@ -42,6 +47,7 @@ type State
 type alias Model =
     { id : Int
     , state : State
+    , prevState : State
     , mine : Bool
     , value : Int
     }
@@ -51,6 +57,7 @@ model : Model
 model =
     { id = 0
     , state = Closed
+    , prevState = Closed
     , mine = False
     , value = 0
     }
@@ -64,9 +71,10 @@ view : Model -> Html Msg
 view model =
     div
         [ class <| "cell " ++ (typeCell model)
-        , onMouseDown MouseDown
-        , onMouseUp MouseUp
-        , onMouseLeave MouseLeave
+        , onMouseDown (MouseDown model)
+        , onMouseUp (MouseUp model)
+        , onMouseLeave (MouseLeave model)
+        , onRightClick (RightClick model)
         ]
         []
 
@@ -75,30 +83,43 @@ view model =
 -- UPDATE
 
 
-update : Msg -> Model -> Model
-update msg model =
+update : Msg -> Model
+update msg =
     case msg of
-        MouseDown ->
-            if model.state == Closed then
-                { model | state = Pressed }
+        MouseDown model ->
+            if isReadyToOpen model then
+                { model | state = Pressed, prevState = model.state }
             else
                 model
 
-        MouseUp ->
+        MouseUp model ->
             if model.state == Pressed then
-                -- todo: calculate value
-                { model
-                    | value = 0
-                    , state = Opened
-                }
+                if model.mine == True then
+                    { model | state = MineHit }
+                else
+                    { model | state = Opened }
             else
                 model
 
-        MouseLeave ->
+        MouseLeave model ->
             if model.state == Pressed then
-                { model | state = Closed }
+                { model | state = model.prevState }
             else
                 model
+
+        RightClick model ->
+            case model.state of
+                Closed ->
+                    { model | state = Flag, prevState = model.state }
+
+                Flag ->
+                    { model | state = Question, prevState = model.state }
+
+                Question ->
+                    { model | state = Closed, prevState = model.state }
+
+                _ ->
+                    model
 
 
 
@@ -107,24 +128,39 @@ update msg model =
 
 typeCell : Model -> String
 typeCell model =
-    if model.mine == True then
-        "mine"
+    case model.state of
+        Pressed ->
+            "mines0"
+
+        Opened ->
+            "mines" ++ (toString model.value)
+
+        Closed ->
+            "covered"
+
+        Flag ->
+            "flag"
+
+        Question ->
+            "question"
+
+        Mine ->
+            "mine"
+
+        MineHit ->
+            "mine-hit"
+
+
+isReadyToOpen : Model -> Bool
+isReadyToOpen model =
+    if
+        model.state
+            == Closed
+            || model.state
+            == Flag
+            || model.state
+            == Question
+    then
+        True
     else
-        case model.state of
-            Pressed ->
-                "mines0"
-
-            Opened ->
-                "mines" ++ (toString model.value)
-
-            Closed ->
-                "covered"
-
-            Flag ->
-                "flag"
-
-            Question ->
-                "question"
-
-            Mine ->
-                "Mine"
+        False

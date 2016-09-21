@@ -63,7 +63,22 @@ update : Msg -> Model -> Model
 update msg model =
     case msg of
         CellMsg cellMsg ->
-            model
+            let
+                newCell =
+                    Cell.update cellMsg
+            in
+                map
+                    (\column ->
+                        map
+                            (\cell ->
+                                if cell.id == newCell.id then
+                                    newCell
+                                else
+                                    cell
+                            )
+                            column
+                    )
+                    model
 
 
 
