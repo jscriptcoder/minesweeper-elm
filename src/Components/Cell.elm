@@ -94,7 +94,7 @@ update msg =
 
         MouseUp model ->
             if model.state == Pressed then
-                if model.mine == True then
+                if model.mine then
                     { model | state = MineHit }
                 else
                     { model | state = Opened }

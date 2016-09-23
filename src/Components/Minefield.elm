@@ -11,6 +11,8 @@ module Components.Minefield
 import Html exposing (Html, div)
 import Html.Attributes exposing (class)
 import List exposing (..)
+import Array exposing (..)
+import Maybe exposing (withDefault, andThen)
 import Html.App as App
 import Components.Config as Config
 import Components.Cell as Cell
@@ -31,6 +33,14 @@ type alias Model =
     List (List Cell.Model)
 
 
+type alias Grid =
+    Model
+
+
+type alias Matrix =
+    Array (Array Cell.Model)
+
+
 model : Model
 model =
     create Config.model
@@ -42,12 +52,12 @@ model =
 
 view : Model -> Html Msg
 view model =
-    div [ class "minefield" ] <| map viewRowCells model
+    div [ class "minefield" ] <| List.map viewRowCells model
 
 
 viewRowCells : List Cell.Model -> Html Msg
 viewRowCells cells =
-    div [ class "row" ] <| map viewCell cells
+    div [ class "row" ] <| List.map viewCell cells
 
 
 viewCell : Cell.Model -> Html Msg
@@ -64,21 +74,26 @@ update msg model =
     case msg of
         CellMsg cellMsg ->
             let
-                newCell =
+                cell =
                     Cell.update cellMsg
             in
-                map
-                    (\column ->
-                        map
-                            (\cell ->
-                                if cell.id == newCell.id then
-                                    newCell
-                                else
-                                    cell
-                            )
-                            column
-                    )
-                    model
+                updateGrid cell model
+
+
+updateGrid : Cell.Model -> Model -> Model
+updateGrid newCell model =
+    List.map
+        (\column ->
+            List.map
+                (\cell ->
+                    if cell.id == newCell.id then
+                        newCell
+                    else
+                        cell
+                )
+                column
+        )
+        model
 
 
 
@@ -101,49 +116,139 @@ create config =
             config.randomMines
 
         cells =
-            repeat len Cell.model
+            List.repeat len Cell.model
 
         ids =
             [1..len]
 
         cellsWithId =
-            map2 (\id cell -> { cell | id = id }) ids cells
+            List.map2 (\id cell -> { cell | id = id }) ids cells
 
         cellsWithMines =
-            map
+            List.map
                 (\cell ->
-                    if member cell.id randomMines then
+                    if List.member cell.id randomMines then
                         { cell | mine = True }
                     else
                         cell
                 )
                 cellsWithId
+
+        grid =
+            list2Grid (List.reverse cellsWithMines) columns
     in
-        list2Matrix (reverse cellsWithMines) columns
+        findCellValues grid
 
 
-list2Matrix : List Cell.Model -> Int -> Model
-list2Matrix cells columns =
-    list2MatrixHelper cells columns []
+list2Grid : List Cell.Model -> Int -> Grid
+list2Grid cells columns =
+    list2GridHelper cells columns []
 
 
-list2MatrixHelper : List Cell.Model -> Int -> Model -> Model
-list2MatrixHelper cells columns matrix =
+list2GridHelper : List Cell.Model -> Int -> Grid -> Grid
+list2GridHelper cells columns grid =
     let
         cellsColumn =
-            take columns cells
+            List.take columns cells
     in
-        if length cellsColumn > 0 then
+        if List.length cellsColumn > 0 then
             let
                 newCells =
-                    drop columns cells
+                    List.drop columns cells
 
                 reverseColumn =
-                    reverse cellsColumn
+                    List.reverse cellsColumn
 
-                newMatrix =
-                    reverseColumn :: matrix
+                newGrid =
+                    reverseColumn :: grid
             in
-                list2MatrixHelper newCells columns newMatrix
+                list2GridHelper newCells columns newGrid
         else
-            matrix
+            grid
+
+
+findCellValues : Grid -> Grid
+findCellValues grid =
+    let
+        matrix =
+            grid2Matrix grid
+
+        matrixWithValues =
+            Array.indexedMap
+                (\column cells ->
+                    Array.indexedMap
+                        (\row cell ->
+                            if cell.mine then
+                                cell
+                            else
+                                { cell | value = findValue column row matrix }
+                        )
+                        cells
+                )
+                matrix
+
+        gridWithValues =
+            matrix2Grid matrixWithValues
+    in
+        gridWithValues
+
+
+grid2Matrix : Grid -> Matrix
+grid2Matrix grid =
+    Array.fromList (List.map (\column -> Array.fromList column) grid)
+
+
+matrix2Grid : Matrix -> Grid
+matrix2Grid matrix =
+    Array.toList (Array.map (\column -> Array.toList column) matrix)
+
+
+findValue : Int -> Int -> Matrix -> Int
+findValue column row matrix =
+    let
+        maybeTopLeft =
+            get (column - 1) matrix `andThen` get (row - 1)
+
+        maybeTop =
+            get column matrix `andThen` get (row - 1)
+
+        maybeTopRight =
+            get (column + 1) matrix `andThen` get (row - 1)
+
+        maybeLeft =
+            get (column - 1) matrix `andThen` get row
+
+        maybeRight =
+            get (column + 1) matrix `andThen` get row
+
+        maybeBottomLeft =
+            get (column - 1) matrix `andThen` get (row + 1)
+
+        maybeBottom =
+            get column matrix `andThen` get (row + 1)
+
+        maybeBottomRight =
+            get (column + 1) matrix `andThen` get (row + 1)
+
+        emptyCell =
+            Cell.model
+
+        pointPerMineList =
+            List.map
+                (\cell ->
+                    if cell.mine then
+                        1
+                    else
+                        0
+                )
+                [ withDefault emptyCell maybeTopLeft
+                , withDefault emptyCell maybeTop
+                , withDefault emptyCell maybeTopRight
+                , withDefault emptyCell maybeLeft
+                , withDefault emptyCell maybeRight
+                , withDefault emptyCell maybeBottomLeft
+                , withDefault emptyCell maybeBottom
+                , withDefault emptyCell maybeBottomRight
+                ]
+    in
+        List.foldr (+) 0 pointPerMineList
