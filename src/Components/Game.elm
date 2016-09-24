@@ -81,10 +81,17 @@ update msg model =
                 config =
                     model.config
 
-                newConfig =
+                configWithSeed =
                     { config | seed = initialSeed <| round time }
+
+                configWithMines =
+                    Config.generateRandomMines configWithSeed
             in
-                ( { model | config = Config.generateRandomMines newConfig }, Cmd.none )
+                ( processMenuMsg
+                    Menu.NewGame
+                    { model | config = configWithMines }
+                , Cmd.none
+                )
 
         DialogMsg dialogMsg ->
             let
