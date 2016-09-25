@@ -6,6 +6,7 @@ module Components.Cell
         , model
         , view
         , update
+        , isReadyToOpen
         )
 
 import Html exposing (Html, div)
@@ -153,14 +154,7 @@ typeCell model =
 
 isReadyToOpen : Model -> Bool
 isReadyToOpen model =
-    if
-        model.state
-            == Closed
-            || model.state
-            == Flag
-            || model.state
-            == Question
-    then
-        True
-    else
-        False
+    model.state
+        == Closed
+        || model.state
+        == Question

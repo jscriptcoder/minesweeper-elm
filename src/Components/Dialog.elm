@@ -27,7 +27,7 @@ type UpdateInput
 
 
 type Button
-    = Ok
+    = SaveCustom
     | Cancel
 
 
@@ -124,7 +124,7 @@ viewButtons =
             [ class "form-button ok-btn"
             , type' "button"
             , value "OK"
-            , onClick Ok
+            , onClick SaveCustom
             ]
             []
         , input

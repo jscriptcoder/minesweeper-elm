@@ -83,13 +83,10 @@ update msg model =
 
                 configWithSeed =
                     { config | seed = initialSeed <| round time }
-
-                configWithMines =
-                    Config.generateRandomMines configWithSeed
             in
                 ( processMenuMsg
                     Menu.NewGame
-                    { model | config = configWithMines }
+                    { model | config = configWithSeed }
                 , Cmd.none
                 )
 
@@ -145,7 +142,7 @@ processDialogMsg : Dialog.Msg -> Model -> Dialog.Model -> Model
 processDialogMsg dialogMsg model dialogModel =
     case dialogMsg of
         Dialog.ButtonMsg buttonMsg ->
-            if buttonMsg == Dialog.Ok then
+            if buttonMsg == Dialog.SaveCustom then
                 let
                     newConfig =
                         Config.customLevel

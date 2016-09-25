@@ -1,6 +1,6 @@
 module Components.Minefield
     exposing
-        ( Msg
+        ( Msg(..)
         , Model
         , model
         , view
@@ -69,7 +69,7 @@ viewCell cell =
 -- UPDATE
 
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> ( Model, Cell.Model )
 update msg model =
     case msg of
         CellMsg cellMsg ->
@@ -77,7 +77,7 @@ update msg model =
                 cell =
                     Cell.update cellMsg
             in
-                updateGrid cell model
+                ( updateGrid cell model, cell )
 
 
 updateGrid : Cell.Model -> Model -> Model

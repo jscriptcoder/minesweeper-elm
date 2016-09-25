@@ -16,6 +16,7 @@ import Components.Config as Config
 import Components.Menu as Menu
 import Components.Header as Header
 import Components.Minefield as Minefield
+import Components.Cell as Cell
 
 
 -- MESSAGES
@@ -107,7 +108,17 @@ update msg model config =
                 processHeaderMsg headerMsg newModel config
 
         MinefieldMsg minefieldMsg ->
-            { model | minefield = Minefield.update minefieldMsg model.minefield }
+            let
+                ( newMinefield, newCell ) =
+                    Minefield.update minefieldMsg model.minefield
+            in
+                { model
+                    | minefield = newMinefield
+                    , header =
+                        processMinefieldForHeaderFace
+                            newCell
+                            model.header
+                }
 
 
 
@@ -128,3 +139,15 @@ processHeaderMsg headerMsg model config =
         createMinefield model config
     else
         model
+
+
+processMinefieldForHeaderFace : Cell.Model -> Header.Model -> Header.Model
+processMinefieldForHeaderFace cell header =
+    if cell.state == Cell.Pressed then
+        { header | face = Header.Surprised }
+    else if cell.state == Cell.Opened then
+        { header | face = Header.Smile }
+    else if cell.state == Cell.MineHit then
+        { header | face = Header.Sad }
+    else
+        { header | face = Header.Smile }
