@@ -109,16 +109,21 @@ update msg model config =
 
         MinefieldMsg minefieldMsg ->
             let
-                ( newMinefield, newCell ) =
+                ( newMinefield, maybeNewCell ) =
                     Minefield.update minefieldMsg model.minefield
             in
-                { model
-                    | minefield = newMinefield
-                    , header =
-                        processMinefieldForHeaderFace
-                            newCell
-                            model.header
-                }
+                case maybeNewCell of
+                    Just newCell ->
+                        { model
+                            | minefield = newMinefield
+                            , header =
+                                processMinefieldForHeaderFace
+                                    newCell
+                                    model.header
+                        }
+
+                    Nothing ->
+                        { model | minefield = newMinefield }
 
 
 

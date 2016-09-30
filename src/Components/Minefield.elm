@@ -69,31 +69,46 @@ viewCell cell =
 -- UPDATE
 
 
-update : Msg -> Model -> ( Model, Cell.Model )
+update : Msg -> Model -> ( Model, Maybe Cell.Model )
 update msg model =
     case msg of
         CellMsg cellMsg ->
             let
-                cell =
+                maybeCell =
                     Cell.update cellMsg
             in
-                ( updateGrid cell model, cell )
+                case maybeCell of
+                    Just cell ->
+                        ( updateGrid cell model, Just cell )
+
+                    Nothing ->
+                        ( model, Nothing )
 
 
 updateGrid : Cell.Model -> Model -> Model
 updateGrid newCell model =
-    List.map
-        (\column ->
+    let
+        newGrid =
             List.map
-                (\cell ->
-                    if cell.id == newCell.id then
-                        newCell
-                    else
-                        cell
+                (\column ->
+                    List.map
+                        (\cell ->
+                            if cell.id == newCell.id then
+                                newCell
+                            else
+                                cell
+                        )
+                        column
                 )
-                column
-        )
-        model
+                model
+
+        isEmptyCell =
+            newCell.state == Cell.Opened && newCell.value == 0
+    in
+        if isEmptyCell then
+            openEmptyNeighbors newGrid newCell
+        else
+            newGrid
 
 
 
@@ -137,7 +152,7 @@ create config =
         grid =
             list2Grid (List.reverse cellsWithMines) columns
     in
-        findCellValues grid
+        findCellsValueAndLocation grid
 
 
 list2Grid : List Cell.Model -> Int -> Grid
@@ -167,8 +182,8 @@ list2GridHelper cells columns grid =
             grid
 
 
-findCellValues : Grid -> Grid
-findCellValues grid =
+findCellsValueAndLocation : Grid -> Grid
+findCellsValueAndLocation grid =
     let
         matrix =
             grid2Matrix grid
@@ -181,7 +196,11 @@ findCellValues grid =
                             if cell.mine then
                                 cell
                             else
-                                { cell | value = findValue column row matrix }
+                                { cell
+                                    | value = findValue column row matrix
+                                    , col = column
+                                    , row = row
+                                }
                         )
                         cells
                 )
@@ -251,4 +270,55 @@ findValue column row matrix =
                 , withDefault emptyCell maybeBottomRight
                 ]
     in
-        List.foldr (+) 0 pointPerMineList
+        List.foldl (+) 0 pointPerMineList
+
+
+openEmptyNeighbors : Grid -> Cell.Model -> Grid
+openEmptyNeighbors grid newCell =
+    List.map
+        (\cells ->
+            List.map
+                (\cell ->
+                    if canOpenCell cell newCell then
+                        { cell | state = Cell.Opened }
+                    else
+                        cell
+                )
+                cells
+        )
+        grid
+
+
+openEmptyNeighborsHelper : Grid -> Cell.Model -> List Cell.Model -> Grid
+openEmptyNeighborsHelper grid cellRef neighbors =
+    if List.length neighbors > 0 then
+        grid
+    else
+        grid
+
+
+canOpenCell : Cell.Model -> Cell.Model -> Bool
+canOpenCell cell cellRef =
+    let
+        isNeighbor =
+            isNeighborCell cell cellRef
+
+        isNotMine =
+            not cell.mine
+
+        hasNoValue =
+            cell.value == 0
+    in
+        isNeighbor && isNotMine && hasNoValue
+
+
+isNeighborCell : Cell.Model -> Cell.Model -> Bool
+isNeighborCell cell cellRef =
+    cell.col
+        >= (cellRef.col - 1)
+        && cell.col
+        <= (cellRef.col + 1)
+        && cell.row
+        >= (cellRef.row - 1)
+        && cell.row
+        <= (cellRef.row + 1)

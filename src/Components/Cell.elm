@@ -51,6 +51,8 @@ type alias Model =
     , prevState : State
     , mine : Bool
     , value : Int
+    , col : Int
+    , row : Int
     }
 
 
@@ -61,6 +63,8 @@ model =
     , prevState = Closed
     , mine = False
     , value = 0
+    , col = -1
+    , row = -1
     }
 
 
@@ -84,43 +88,43 @@ view model =
 -- UPDATE
 
 
-update : Msg -> Model
+update : Msg -> Maybe Model
 update msg =
     case msg of
         MouseDown model ->
             if isReadyToOpen model then
-                { model | state = Pressed, prevState = model.state }
+                Just { model | state = Pressed, prevState = model.state }
             else
-                model
+                Nothing
 
         MouseUp model ->
             if model.state == Pressed then
                 if model.mine then
-                    { model | state = MineHit }
+                    Just { model | state = MineHit }
                 else
-                    { model | state = Opened }
+                    Just { model | state = Opened }
             else
-                model
+                Nothing
 
         MouseLeave model ->
             if model.state == Pressed then
-                { model | state = model.prevState }
+                Just { model | state = model.prevState }
             else
-                model
+                Nothing
 
         RightClick model ->
             case model.state of
                 Closed ->
-                    { model | state = Flag, prevState = model.state }
+                    Just { model | state = Flag, prevState = model.state }
 
                 Flag ->
-                    { model | state = Question, prevState = model.state }
+                    Just { model | state = Question, prevState = model.state }
 
                 Question ->
-                    { model | state = Closed, prevState = model.state }
+                    Just { model | state = Closed, prevState = model.state }
 
                 _ ->
-                    model
+                    Nothing
 
 
 
