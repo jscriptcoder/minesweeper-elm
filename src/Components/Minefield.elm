@@ -16,6 +16,7 @@ import Maybe exposing (withDefault, andThen)
 import Html.App as App
 import Components.Config as Config
 import Components.Cell as Cell
+import Components.Utils as Utils
 
 
 -- MESSAGES
@@ -101,14 +102,8 @@ updateGrid newCell model =
                         column
                 )
                 model
-
-        isEmptyCell =
-            newCell.state == Cell.Opened && newCell.value == 0
     in
-        if isEmptyCell then
-            openEmptyNeighbors newGrid newCell
-        else
-            newGrid
+        openEmptyNeighbors newGrid newCell
 
 
 
@@ -186,7 +181,7 @@ findCellsValueAndLocation : Grid -> Grid
 findCellsValueAndLocation grid =
     let
         matrix =
-            grid2Matrix grid
+            Utils.grid2Matrix grid
 
         matrixWithValues =
             Array.indexedMap
@@ -207,23 +202,32 @@ findCellsValueAndLocation grid =
                 matrix
 
         gridWithValues =
-            matrix2Grid matrixWithValues
+            Utils.matrix2Grid matrixWithValues
     in
         gridWithValues
 
 
-grid2Matrix : Grid -> Matrix
-grid2Matrix grid =
-    Array.fromList (List.map (\column -> Array.fromList column) grid)
-
-
-matrix2Grid : Matrix -> Grid
-matrix2Grid matrix =
-    Array.toList (Array.map (\column -> Array.toList column) matrix)
-
-
 findValue : Int -> Int -> Matrix -> Int
 findValue column row matrix =
+    let
+        neighbors =
+            findNeighbors column row matrix
+
+        pointPerMineList =
+            List.map
+                (\cell ->
+                    if cell.mine then
+                        1
+                    else
+                        0
+                )
+                neighbors
+    in
+        List.foldl (+) 0 pointPerMineList
+
+
+findNeighbors : Int -> Int -> Matrix -> List Cell.Model
+findNeighbors column row matrix =
     let
         maybeTopLeft =
             get (column - 1) matrix `andThen` get (row - 1)
@@ -248,77 +252,74 @@ findValue column row matrix =
 
         maybeBottomRight =
             get (column + 1) matrix `andThen` get (row + 1)
-
-        emptyCell =
-            Cell.model
-
-        pointPerMineList =
-            List.map
-                (\cell ->
-                    if cell.mine then
-                        1
-                    else
-                        0
-                )
-                [ withDefault emptyCell maybeTopLeft
-                , withDefault emptyCell maybeTop
-                , withDefault emptyCell maybeTopRight
-                , withDefault emptyCell maybeLeft
-                , withDefault emptyCell maybeRight
-                , withDefault emptyCell maybeBottomLeft
-                , withDefault emptyCell maybeBottom
-                , withDefault emptyCell maybeBottomRight
-                ]
     in
-        List.foldl (+) 0 pointPerMineList
+        Utils.sanitizeMaybeList
+            [ maybeTopLeft
+            , maybeTop
+            , maybeTopRight
+            , maybeLeft
+            , maybeRight
+            , maybeBottomLeft
+            , maybeBottom
+            , maybeBottomRight
+            ]
+
+
+findQualifiedNeighbors : Int -> Int -> Matrix -> List Cell.Model
+findQualifiedNeighbors column row matrix =
+    let
+        neighbors =
+            findNeighbors column row matrix
+    in
+        List.filter (\cell -> Cell.canOpen cell) neighbors
 
 
 openEmptyNeighbors : Grid -> Cell.Model -> Grid
 openEmptyNeighbors grid newCell =
-    List.map
-        (\cells ->
-            List.map
-                (\cell ->
-                    if canOpenCell cell newCell then
-                        { cell | state = Cell.Opened }
-                    else
-                        cell
-                )
-                cells
-        )
-        grid
+    if Cell.isEmpty newCell then
+        let
+            qualifiedNeighbors =
+                findQualifiedNeighbors newCell.col newCell.row <| Utils.grid2Matrix grid
 
-
-openEmptyNeighborsHelper : Grid -> Cell.Model -> List Cell.Model -> Grid
-openEmptyNeighborsHelper grid cellRef neighbors =
-    if List.length neighbors > 0 then
-        grid
+            newGrid =
+                List.map
+                    (\cells ->
+                        List.map
+                            (\cell ->
+                                if
+                                    any
+                                        (\qualifiedCell -> qualifiedCell.id == cell.id)
+                                        qualifiedNeighbors
+                                then
+                                    { cell | state = Cell.Opened }
+                                else
+                                    cell
+                            )
+                            cells
+                    )
+                    grid
+        in
+            openEmptyNeighborsHelper
+                newGrid
+                (head qualifiedNeighbors)
+                (tail qualifiedNeighbors)
     else
         grid
 
 
-canOpenCell : Cell.Model -> Cell.Model -> Bool
-canOpenCell cell cellRef =
-    let
-        isNeighbor =
-            isNeighborCell cell cellRef
+openEmptyNeighborsHelper grid maybeCell maybeNeighbors =
+    case maybeCell of
+        Just cell ->
+            let
+                newGrid =
+                    openEmptyNeighbors grid cell
+            in
+                case maybeNeighbors of
+                    Just neighbors ->
+                        openEmptyNeighborsHelper newGrid (head neighbors) (tail neighbors)
 
-        isNotMine =
-            not cell.mine
+                    Nothing ->
+                        newGrid
 
-        hasNoValue =
-            cell.value == 0
-    in
-        isNeighbor && isNotMine && hasNoValue
-
-
-isNeighborCell : Cell.Model -> Cell.Model -> Bool
-isNeighborCell cell cellRef =
-    cell.col
-        >= (cellRef.col - 1)
-        && cell.col
-        <= (cellRef.col + 1)
-        && cell.row
-        >= (cellRef.row - 1)
-        && cell.row
-        <= (cellRef.row + 1)
+        Nothing ->
+            grid

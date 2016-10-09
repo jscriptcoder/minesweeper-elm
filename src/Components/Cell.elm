@@ -7,6 +7,8 @@ module Components.Cell
         , view
         , update
         , isReadyToOpen
+        , isEmpty
+        , canOpen
         )
 
 import Html exposing (Html, div)
@@ -162,3 +164,37 @@ isReadyToOpen model =
         == Closed
         || model.state
         == Question
+
+
+isEmpty : Model -> Bool
+isEmpty model =
+    let
+        isNotMine =
+            not model.mine
+
+        isNotFlag =
+            model.state /= Flag
+
+        hasNoValue =
+            model.value == 0
+    in
+        isNotMine
+            && isNotFlag
+            && hasNoValue
+
+
+canOpen : Model -> Bool
+canOpen model =
+    let
+        isNotMine =
+            not model.mine
+
+        isNotFlag =
+            model.state /= Flag
+
+        isClosed =
+            model.state == Closed
+    in
+        isNotMine
+            && isNotFlag
+            && isClosed
