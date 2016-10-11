@@ -100,7 +100,7 @@ updateGrid newCell model =
                 openAllMines newModel
 
             Cell.Opened ->
-                openEmptyNeighbors newModel newCell
+                openEmptyNeighbors newCell newModel
 
             _ ->
                 newModel
@@ -213,6 +213,47 @@ findNeighbors location grid =
             ]
 
 
+openEmptyNeighbors : Cell.Model -> Grid -> Grid
+openEmptyNeighbors newCell grid =
+    if Cell.isEmpty newCell then
+        let
+            qualifiedNeighbors =
+                findQualifiedNeighbors
+                    newCell.loc
+                    grid
+
+            newGrid =
+                List.foldl openCell grid qualifiedNeighbors
+        in
+            openEmptyNeighborsHelper
+                (head qualifiedNeighbors)
+                (tail qualifiedNeighbors)
+                newGrid
+    else
+        grid
+
+
+openEmptyNeighborsHelper maybeCell maybeNeighbors grid =
+    case maybeCell of
+        Just cell ->
+            let
+                newGrid =
+                    openEmptyNeighbors cell grid
+            in
+                case maybeNeighbors of
+                    Just neighbors ->
+                        openEmptyNeighborsHelper
+                            (head neighbors)
+                            (tail neighbors)
+                            newGrid
+
+                    Nothing ->
+                        newGrid
+
+        Nothing ->
+            grid
+
+
 findQualifiedNeighbors : Location -> Grid -> List Cell.Model
 findQualifiedNeighbors loc grid =
     let
@@ -222,53 +263,11 @@ findQualifiedNeighbors loc grid =
         List.filter (\cell -> Cell.canOpen cell) neighbors
 
 
-openEmptyNeighbors : Grid -> Cell.Model -> Grid
-openEmptyNeighbors grid newCell =
-    if Cell.isEmpty newCell then
-        let
-            qualifiedNeighbors =
-                findQualifiedNeighbors
-                    newCell.loc
-                    grid
-
-            newGrid =
-                Matrix.map
-                    (\cell ->
-                        if
-                            any
-                                (\qualifiedCell -> qualifiedCell.id == cell.id)
-                                qualifiedNeighbors
-                        then
-                            { cell | state = Cell.Opened }
-                        else
-                            cell
-                    )
-                    grid
-        in
-            openEmptyNeighborsHelper
-                newGrid
-                (head qualifiedNeighbors)
-                (tail qualifiedNeighbors)
-    else
+openCell cell grid =
+    Matrix.set
+        cell.loc
+        { cell | state = Cell.Opened }
         grid
-
-
-openEmptyNeighborsHelper grid maybeCell maybeNeighbors =
-    case maybeCell of
-        Just cell ->
-            let
-                newGrid =
-                    openEmptyNeighbors grid cell
-            in
-                case maybeNeighbors of
-                    Just neighbors ->
-                        openEmptyNeighborsHelper newGrid (head neighbors) (tail neighbors)
-
-                    Nothing ->
-                        newGrid
-
-        Nothing ->
-            grid
 
 
 openAllMines : Grid -> Grid
