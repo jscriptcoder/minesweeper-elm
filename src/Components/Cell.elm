@@ -7,8 +7,10 @@ module Components.Cell
         , view
         , update
         , isReadyToOpen
+        , makeCell
         , isEmpty
         , canOpen
+        , isCoveredMine
         )
 
 import Html exposing (Html, div)
@@ -20,6 +22,8 @@ import Html.Events
         , onMouseLeave
         , onClick
         )
+import List exposing (member)
+import Matrix exposing (Location)
 import Components.Utils exposing (onRightClick)
 
 
@@ -53,8 +57,7 @@ type alias Model =
     , prevState : State
     , mine : Bool
     , value : Int
-    , col : Int
-    , row : Int
+    , loc : Location
     }
 
 
@@ -65,8 +68,7 @@ model =
     , prevState = Closed
     , mine = False
     , value = 0
-    , col = -1
-    , row = -1
+    , loc = ( -1, -1 )
     }
 
 
@@ -166,6 +168,30 @@ isReadyToOpen model =
         == Question
 
 
+makeCell : Int -> Location -> List Int -> Model
+makeCell width location randomMines =
+    let
+        row =
+            Matrix.row location
+
+        col =
+            Matrix.col location
+
+        id =
+            col + (width * (row - 1))
+
+        cell =
+            { model
+                | id = col + (width * (row - 1))
+                , loc = location
+            }
+    in
+        if member id randomMines then
+            { cell | mine = True }
+        else
+            cell
+
+
 isEmpty : Model -> Bool
 isEmpty model =
     let
@@ -198,3 +224,8 @@ canOpen model =
         isNotMine
             && isNotFlag
             && isClosed
+
+
+isCoveredMine : Model -> Bool
+isCoveredMine model =
+    model.mine && model.state == Closed

@@ -79,7 +79,7 @@ generateRandomMines model =
             1
 
         max =
-            (model.columns * model.rows)
+            (model.rows * model.columns)
 
         generatorList =
             createGenerator size min max
