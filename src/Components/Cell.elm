@@ -172,10 +172,10 @@ makeCell : Int -> Location -> List Int -> Model
 makeCell width location randomMines =
     let
         row =
-            Matrix.row location
+            1 + Matrix.row location
 
         col =
-            Matrix.col location
+            1 + Matrix.col location
 
         id =
             col + (width * (row - 1))
