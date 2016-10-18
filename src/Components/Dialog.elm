@@ -13,7 +13,7 @@ import Html exposing (Html, div, p, label, input, text)
 import Html.Attributes exposing (class, classList, type', value)
 import Html.Events exposing (onInput, onClick)
 import Html.App as App
-import Components.Config as Config
+import Components.Global as Global
 import Components.Utils as Utils
 
 
@@ -51,9 +51,9 @@ type alias Model =
 model : Model
 model =
     { open = False
-    , rows = .rows Config.model
-    , columns = .columns Config.model
-    , mines = .mines Config.model
+    , rows = .rows Global.model
+    , columns = .columns Global.model
+    , mines = .mines Global.model
     }
 
 

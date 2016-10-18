@@ -7,11 +7,13 @@ import Html.App as App
 import Task exposing (perform)
 import Time exposing (now)
 import Random exposing (Seed, initialSeed)
-import Components.Config as Config
+import Components.Global as Global
 import Components.Dialog as Dialog
 import Components.Board as Board
 import Components.Menu as Menu
 import Components.Header as Header
+import Components.Minefield as Minefield
+import Components.Cell as Cell
 
 
 -- MESSAGES
@@ -30,7 +32,7 @@ type Msg
 
 
 type alias Model =
-    { config : Config.Model
+    { global : Global.Model
     , dialog : Dialog.Model
     , board : Board.Model
     }
@@ -38,7 +40,7 @@ type alias Model =
 
 model : Model
 model =
-    { config = Config.model
+    { global = Global.model
     , dialog = Dialog.model
     , board = Board.model
     }
@@ -53,7 +55,7 @@ view model =
     div [ class "game-container" ]
         [ viewClickerAway model
         , App.map DialogMsg <| Dialog.view model.dialog
-        , App.map BoardMsg <| Board.view model.board model.config
+        , App.map BoardMsg <| Board.view model.board model.global
         ]
 
 
@@ -78,15 +80,15 @@ update msg model =
     case msg of
         Timestamp time ->
             let
-                config =
-                    model.config
+                global =
+                    model.global
 
-                configWithSeed =
-                    { config | seed = initialSeed <| round time }
+                globalWithSeed =
+                    { global | seed = initialSeed <| round time }
             in
                 ( processMenuMsg
                     Menu.NewGame
-                    { model | config = configWithSeed }
+                    { model | global = globalWithSeed }
                 , Cmd.none
                 )
 
@@ -103,7 +105,7 @@ update msg model =
         BoardMsg boardMsg ->
             let
                 boardModel =
-                    Board.update boardMsg model.board model.config
+                    Board.update boardMsg model.board model.global
 
                 newModel =
                     { model | board = boardModel }
@@ -126,11 +128,23 @@ update msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    let
+        board =
+            model.board
+
+        global =
+            model.global
+    in
+        Sub.map BoardMsg <| Board.subscriptions board global
 
 
 
 -- Helpers
+
+
+init : ( Model, Cmd Msg )
+init =
+    ( model, requestTime )
 
 
 requestTime : Cmd Msg
@@ -144,16 +158,16 @@ processDialogMsg dialogMsg model dialogModel =
         Dialog.ButtonMsg buttonMsg ->
             if buttonMsg == Dialog.SaveCustom then
                 let
-                    newConfig =
-                        Config.customLevel
-                            model.config
+                    newGlobal =
+                        Global.customLevel
+                            model.global
                             dialogModel.mines
                             dialogModel.rows
                             dialogModel.columns
                 in
                     { model
-                        | config = newConfig
-                        , board = Board.createMinefield model.board newConfig
+                        | global = newGlobal
+                        , board = Board.createMinefield model.board newGlobal
                     }
             else
                 model
@@ -174,6 +188,9 @@ processBoardMsg boardMsg model =
             else
                 model
 
+        Board.MinefieldMsg minefieldMsg ->
+            processMinefieldMsg minefieldMsg model
+
         _ ->
             model
 
@@ -183,42 +200,42 @@ processMenuMsg menuMsg model =
     case menuMsg of
         Menu.NewGame ->
             let
-                newConfig =
-                    Config.generateRandomMines model.config
+                newGlobal =
+                    Global.init model.global
             in
                 { model
-                    | config = newConfig
-                    , board = Board.createMinefield model.board newConfig
+                    | global = newGlobal
+                    , board = Board.createMinefield model.board newGlobal
                 }
 
         Menu.BeginnerLevel ->
             let
-                newConfig =
-                    Config.beginnerLevel model.config
+                newGlobal =
+                    Global.beginnerLevel model.global
             in
                 { model
-                    | config = newConfig
-                    , board = Board.createMinefield model.board newConfig
+                    | global = newGlobal
+                    , board = Board.createMinefield model.board newGlobal
                 }
 
         Menu.IntermediateLevel ->
             let
-                newConfig =
-                    Config.intermediateLevel model.config
+                newGlobal =
+                    Global.intermediateLevel model.global
             in
                 { model
-                    | config = newConfig
-                    , board = Board.createMinefield model.board newConfig
+                    | global = newGlobal
+                    , board = Board.createMinefield model.board newGlobal
                 }
 
         Menu.ExpertLevel ->
             let
-                newConfig =
-                    Config.expertLevel model.config
+                newGlobal =
+                    Global.expertLevel model.global
             in
                 { model
-                    | config = newConfig
-                    , board = Board.createMinefield model.board newConfig
+                    | global = newGlobal
+                    , board = Board.createMinefield model.board newGlobal
                 }
 
         Menu.CustomLevel ->
@@ -226,7 +243,26 @@ processMenuMsg menuMsg model =
 
         Menu.CheckMarks ->
             let
-                newConfig =
-                    Config.toggleMarks model.config
+                newGlobal =
+                    Global.toggleMarks model.global
             in
-                { model | config = newConfig }
+                { model | global = newGlobal }
+
+
+processMinefieldMsg : Minefield.Msg -> Model -> Model
+processMinefieldMsg minefieldMsg model =
+    case minefieldMsg of
+        Minefield.CellMsg cellMsg ->
+            case cellMsg of
+                Cell.MouseClick _ ->
+                    let
+                        global =
+                            model.global
+                    in
+                        if Global.isReady global.state then
+                            { model | global = Global.setStarted global }
+                        else
+                            model
+
+                _ ->
+                    model

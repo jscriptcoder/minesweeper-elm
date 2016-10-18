@@ -5,6 +5,7 @@ module Components.Board
         , model
         , view
         , update
+        , subscriptions
         , createMinefield
         )
 
@@ -12,7 +13,7 @@ import Html exposing (Html, div, text)
 import Html.Attributes exposing (class, classList, href)
 import Html.Events exposing (onClick)
 import Html.App as App
-import Components.Config as Config
+import Components.Global as Global
 import Components.Menu as Menu
 import Components.Header as Header
 import Components.Minefield as Minefield
@@ -52,8 +53,8 @@ model =
 -- VIEW
 
 
-view : Model -> Config.Model -> Html Msg
-view model config =
+view : Model -> Global.Model -> Html Msg
+view model global =
     div [ class "board-window window-wrapper-outer" ]
         [ div [ class "window-wrapper-inner" ]
             [ div [ class "window-container" ]
@@ -61,8 +62,8 @@ view model config =
                 , div [ class "menu-link-container" ]
                     [ viewMenuLink model ]
                 , div [ class "board-wrapper" ]
-                    [ App.map MenuMsg <| Menu.view model.menu config
-                    , App.map HeaderMsg <| Header.view model.header config
+                    [ App.map MenuMsg <| Menu.view model.menu global
+                    , App.map HeaderMsg <| Header.view model.header global
                     , App.map MinefieldMsg <| Minefield.view model.minefield
                     ]
                 ]
@@ -84,8 +85,8 @@ viewMenuLink model =
 -- UPDATE
 
 
-update : Msg -> Model -> Config.Model -> Model
-update msg model config =
+update : Msg -> Model -> Global.Model -> Model
+update msg model global =
     case msg of
         ToggleMenu ->
             { model | menu = Menu.toggleOpen model.menu }
@@ -105,7 +106,7 @@ update msg model config =
                 newModel =
                     { model | header = headerModel }
             in
-                processHeaderMsg headerMsg newModel config
+                processHeaderMsg headerMsg newModel global
 
         MinefieldMsg minefieldMsg ->
             let
@@ -127,21 +128,34 @@ update msg model config =
 
 
 
+-- SUBSCRIPTIONS
+
+
+subscriptions : Model -> Global.Model -> Sub Msg
+subscriptions model global =
+    let
+        header =
+            model.header
+    in
+        Sub.map HeaderMsg <| Header.subscriptions header global
+
+
+
 -- Helpers
 
 
-createMinefield : Model -> Config.Model -> Model
-createMinefield model config =
+createMinefield : Model -> Global.Model -> Model
+createMinefield model global =
     { model
-        | minefield = Minefield.create config
+        | minefield = Minefield.create global
         , header = Header.update Header.ResetGame model.header
     }
 
 
-processHeaderMsg : Header.Msg -> Model -> Config.Model -> Model
-processHeaderMsg headerMsg model config =
+processHeaderMsg : Header.Msg -> Model -> Global.Model -> Model
+processHeaderMsg headerMsg model global =
     if headerMsg == Header.ResetGame then
-        createMinefield model config
+        createMinefield model global
     else
         model
 

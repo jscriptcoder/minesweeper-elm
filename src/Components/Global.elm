@@ -1,8 +1,8 @@
-module Components.Config
+module Components.Global
     exposing
         ( Model
         , model
-        , generateRandomMines
+        , init
         , beginnerLevel
         , intermediateLevel
         , expertLevel
@@ -11,6 +11,12 @@ module Components.Config
         , isIntermediateLevel
         , isExpertLevel
         , isCustomLevel
+        , isReady
+        , setReady
+        , isStarted
+        , setStarted
+        , isOver
+        , setOver
         , toggleMarks
         )
 
@@ -42,8 +48,15 @@ type Level
     | Custom
 
 
+type State
+    = Ready
+    | Started
+    | Over
+
+
 type alias Model =
-    { seed : Seed
+    { state : State
+    , seed : Seed
     , randomMines : List Int
     , mines : Int
     , rows : Int
@@ -55,7 +68,8 @@ type alias Model =
 
 model : Model
 model =
-    { seed = initialSeed 0
+    { state = Ready
+    , seed = initialSeed 0
     , randomMines = []
     , mines = 10
     , rows = 9
@@ -131,9 +145,15 @@ sanitizeListHelper list min max result =
                 result
 
 
+init : Model -> Model
+init model =
+    generateRandomMines
+        { model | state = Ready }
+
+
 beginnerLevel : Model -> Model
 beginnerLevel model =
-    generateRandomMines
+    init
         { model
             | mines = 10
             , rows = 9
@@ -149,7 +169,7 @@ isBeginnerLevel level =
 
 intermediateLevel : Model -> Model
 intermediateLevel model =
-    generateRandomMines
+    init
         { model
             | mines = 40
             , rows = 16
@@ -165,7 +185,7 @@ isIntermediateLevel level =
 
 expertLevel : Model -> Model
 expertLevel model =
-    generateRandomMines
+    init
         { model
             | mines = 99
             , rows = 16
@@ -181,7 +201,7 @@ isExpertLevel level =
 
 customLevel : Model -> Int -> Int -> Int -> Model
 customLevel model mines rows columns =
-    generateRandomMines
+    init
         { model
             | mines = mines
             , rows = rows
@@ -193,6 +213,36 @@ customLevel model mines rows columns =
 isCustomLevel : Level -> Bool
 isCustomLevel level =
     level == Custom
+
+
+isReady : State -> Bool
+isReady state =
+    state == Ready
+
+
+setReady : Model -> Model
+setReady model =
+    { model | state = Ready }
+
+
+isStarted : State -> Bool
+isStarted state =
+    state == Started
+
+
+setStarted : Model -> Model
+setStarted model =
+    { model | state = Started }
+
+
+isOver : State -> Bool
+isOver state =
+    state == Over
+
+
+setOver : Model -> Model
+setOver model =
+    { model | state = Over }
 
 
 toggleMarks : Model -> Model

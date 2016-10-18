@@ -11,11 +11,10 @@ module Components.Minefield
 import Html exposing (Html, div)
 import Html.Attributes exposing (class)
 import List exposing (..)
-import Array exposing (..)
 import Maybe exposing (withDefault, andThen)
 import Html.App as App
 import Matrix exposing (..)
-import Components.Config as Config
+import Components.Global as Global
 import Components.Cell as Cell
 import Components.Utils as Utils
 
@@ -41,7 +40,7 @@ type alias Model =
 
 model : Model
 model =
-    create Config.model
+    create Global.model
 
 
 
@@ -110,14 +109,14 @@ updateGrid newCell model =
 -- Helpers
 
 
-create : Config.Model -> Grid
-create config =
+create : Global.Model -> Grid
+create global =
     let
         rows =
-            config.rows
+            global.rows
 
         columns =
-            config.columns
+            global.columns
 
         width =
             columns
@@ -126,7 +125,7 @@ create config =
             rows * columns
 
         randomMines =
-            config.randomMines
+            global.randomMines
 
         grid =
             Matrix.matrix
@@ -233,6 +232,7 @@ openEmptyNeighbors newCell grid =
         grid
 
 
+openEmptyNeighborsHelper : Maybe Cell.Model -> Maybe (List Cell.Model) -> Grid -> Grid
 openEmptyNeighborsHelper maybeCell maybeNeighbors grid =
     case maybeCell of
         Just cell ->
@@ -263,6 +263,7 @@ findQualifiedNeighbors loc grid =
         List.filter (\cell -> Cell.canOpen cell) neighbors
 
 
+openCell : Cell.Model -> Grid -> Grid
 openCell cell grid =
     Matrix.set
         cell.loc

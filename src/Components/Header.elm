@@ -6,6 +6,7 @@ module Components.Header
         , model
         , view
         , update
+        , subscriptions
         )
 
 import Html exposing (Html, div)
@@ -18,7 +19,8 @@ import Html.Events
         , onClick
         )
 import String exposing (padLeft, slice)
-import Components.Config as Config
+import Time exposing (Time, every, second)
+import Components.Global as Global
 
 
 -- MESSAGES
@@ -28,6 +30,7 @@ type Msg
     = FaceDown
     | FaceUp
     | FaceLeave
+    | Tick Time
     | ResetGame
 
 
@@ -43,15 +46,17 @@ type Face
 
 
 type alias Model =
-    { timer : Int
+    { flags : Int
     , face : Face
+    , timer : Int
     }
 
 
 model : Model
 model =
-    { timer = 0
+    { flags = 0
     , face = Smile
+    , timer = 0
     }
 
 
@@ -59,12 +64,12 @@ model =
 -- VIEW
 
 
-view : Model -> Config.Model -> Html Msg
-view model config =
+view : Model -> Global.Model -> Html Msg
+view model global =
     div [ class "header-wrapper" ]
         [ div [ class "header-container" ]
             [ div [ class "header" ]
-                [ viewMineCount model config
+                [ viewMineCount model global
                 , viewFace model.face
                 , viewTimer model.timer
                 ]
@@ -72,11 +77,11 @@ view model config =
         ]
 
 
-viewMineCount : Model -> Config.Model -> Html Msg
-viewMineCount model config =
+viewMineCount : Model -> Global.Model -> Html Msg
+viewMineCount model global =
     let
         ( hundres, tens, ones ) =
-            getDigits config.mines
+            getDigits <| global.mines - model.flags
     in
         div [ class "mine-count numbers" ]
             [ div [ class <| "digit hundres t" ++ hundres ] []
@@ -129,8 +134,23 @@ update msg model =
             else
                 model
 
+        Tick _ ->
+            { model | timer = model.timer + 1 }
+
         ResetGame ->
             { model | timer = 0 }
+
+
+
+-- SUBSCRIPTIONS
+
+
+subscriptions : Model -> Global.Model -> Sub Msg
+subscriptions model global =
+    if Global.isStarted global.state then
+        every second Tick
+    else
+        Sub.none
 
 
 

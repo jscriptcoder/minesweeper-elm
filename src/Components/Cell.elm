@@ -18,7 +18,6 @@ import Html.Attributes exposing (class)
 import Html.Events
     exposing
         ( onMouseDown
-        , onMouseUp
         , onMouseLeave
         , onClick
         )
@@ -32,8 +31,8 @@ import Components.Utils exposing (onRightClick)
 
 type Msg
     = MouseDown Model
-    | MouseUp Model
     | MouseLeave Model
+    | MouseClick Model
     | RightClick Model
 
 
@@ -81,8 +80,8 @@ view model =
     div
         [ class <| "cell " ++ (typeCell model)
         , onMouseDown (MouseDown model)
-        , onMouseUp (MouseUp model)
         , onMouseLeave (MouseLeave model)
+        , onClick (MouseClick model)
         , onRightClick (RightClick model)
         ]
         []
@@ -101,18 +100,18 @@ update msg =
             else
                 Nothing
 
-        MouseUp model ->
+        MouseLeave model ->
+            if model.state == Pressed then
+                Just { model | state = model.prevState }
+            else
+                Nothing
+
+        MouseClick model ->
             if model.state == Pressed then
                 if model.mine then
                     Just { model | state = MineHit }
                 else
                     Just { model | state = Opened }
-            else
-                Nothing
-
-        MouseLeave model ->
-            if model.state == Pressed then
-                Just { model | state = model.prevState }
             else
                 Nothing
 

@@ -11,7 +11,7 @@ module Components.Menu
 import Html exposing (Html, ul, li, text)
 import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
-import Components.Config as Config
+import Components.Global as Global
 
 
 -- MESSAGES
@@ -44,15 +44,15 @@ model =
 -- VIEW
 
 
-view : Model -> Config.Model -> Html Msg
-view model config =
+view : Model -> Global.Model -> Html Msg
+view model global =
     ul [ classList [ ( "menu", True ), ( "open", model.open ) ] ]
         [ li [ class "menu-new", onClick NewGame ] [ text "New" ]
         , li [ class "menu-divider" ] []
         , li
             [ classList
                 [ ( "game-level menu-beginner", True )
-                , ( "checked", Config.isBeginnerLevel config.level )
+                , ( "checked", Global.isBeginnerLevel global.level )
                 ]
             , onClick BeginnerLevel
             ]
@@ -60,7 +60,7 @@ view model config =
         , li
             [ classList
                 [ ( "game-level menu-intermediate", True )
-                , ( "checked", Config.isIntermediateLevel config.level )
+                , ( "checked", Global.isIntermediateLevel global.level )
                 ]
             , onClick IntermediateLevel
             ]
@@ -68,7 +68,7 @@ view model config =
         , li
             [ classList
                 [ ( "game-level menu-expert", True )
-                , ( "checked", Config.isExpertLevel config.level )
+                , ( "checked", Global.isExpertLevel global.level )
                 ]
             , onClick ExpertLevel
             ]
@@ -76,7 +76,7 @@ view model config =
         , li
             [ classList
                 [ ( "game-level menu-custom", True )
-                , ( "checked", Config.isCustomLevel config.level )
+                , ( "checked", Global.isCustomLevel global.level )
                 ]
             , onClick CustomLevel
             ]
@@ -85,7 +85,7 @@ view model config =
         , li
             [ classList
                 [ ( "menu-marks", True )
-                , ( "checked", config.marks )
+                , ( "checked", global.marks )
                 ]
             , onClick CheckMarks
             ]
