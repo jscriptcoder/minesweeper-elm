@@ -9,7 +9,7 @@ module Components.Minefield
         )
 
 import Html exposing (Html, div)
-import Html.Attributes exposing (class)
+import Html.Attributes exposing (class, classList)
 import List exposing (..)
 import Maybe exposing (withDefault, andThen)
 import Html.App as App
@@ -47,11 +47,30 @@ model =
 -- VIEW
 
 
-view : Model -> Html Msg
-view model =
-    Matrix.toList model
-        |> List.map viewRowCells
-        |> div [ class "minefield" ]
+view : Model -> Global.Model -> Html Msg
+view model global =
+    let
+        cells =
+            List.map viewRowCells <| Matrix.toList model
+
+        blocker =
+            viewMinesBlocker global
+
+        minefield =
+            blocker :: cells
+    in
+        div [ class "minefield" ] minefield
+
+
+viewMinesBlocker : Global.Model -> Html Msg
+viewMinesBlocker global =
+    div
+        [ classList
+            [ ( "mines-blocker", True )
+            , ( "active", Global.isOver global.state )
+            ]
+        ]
+        []
 
 
 viewRowCells : List Cell.Model -> Html Msg

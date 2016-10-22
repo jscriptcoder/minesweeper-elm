@@ -1,23 +1,35 @@
 // Inspiration: https://codepen.io/joelbyrd/pen/hdHKF
 
+
+
+/**
+ * Helper class that will be placed on top
+ * of others elements in the same container
+ */
+.on-top {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 0;
+
+	&.active {
+		z-index: 2;
+	}
+}
+
+
+
 .game-container {
 	position: relative;
 
 	// We used this guy to simulate clicking away
 	// and close the menu
-	.clicker-away {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		z-index: 0;
-
-		&.ready {
-			z-index: 1;
-		}
-	}
+	.clicker-away { @extend .on-top }
 }
+
+
 
 .window-wrapper-outer {
 	border: 1px solid;
@@ -55,6 +67,8 @@
 	height: 25px;
 	background: #ece9d8;
 }
+
+
 
 /* CUSTOM LEVEL DIALOG */
 .custom-level-dialog {
@@ -103,9 +117,12 @@
 }
 /* END CUSTOM LEVEL DIALOG */
 
+
+
 /* BOARD WINDOW */
 .board-window {
 	display: inline-block;
+	z-index: 1;
 
 	.title-bar { background-position: 0 -84px; }
 
@@ -117,6 +134,8 @@
 		border-top: 3px solid #fff;
 	}
 }
+
+
 
 	/* MENU */
 	.menu-link-container {
@@ -190,6 +209,8 @@
 	}
 	/* END MENU */
 
+
+
 	/* HEADER */
 	.header-wrapper {
 		border-bottom: 7px solid #bdbdbd;
@@ -255,14 +276,22 @@
 	}
 	/* END HEADER */
 
+
+
 	/* MIENFIELD */
 	.minefield {
+		position: relative;
 		display: flex;
 		flex-direction: column;
 		border: 3px solid;
 		border-color: #7d7d7d #fff #fff #7d7d7d;
 
-		.row { display: flex; }
+		.mines-blocker { @extend .on-top }
+
+		.row {
+			display: flex;
+			z-index: 1;
+		}
 
 		.cell {
 			width: 16px;

@@ -64,7 +64,7 @@ viewClickerAway model =
     div
         [ classList
             [ ( "clicker-away", True )
-            , ( "ready", model.board.menu.open )
+            , ( "active", model.board.menu.open )
             ]
         , onClick ClickAway
         ]
@@ -254,12 +254,14 @@ processMinefieldMsg minefieldMsg model =
     case minefieldMsg of
         Minefield.CellMsg cellMsg ->
             case cellMsg of
-                Cell.MouseClick _ ->
+                Cell.MouseClick cell ->
                     let
                         global =
                             model.global
                     in
-                        if Global.isReady global.state then
+                        if cell.mine then
+                            { model | global = Global.setOver global }
+                        else if Global.isReady global.state then
                             { model | global = Global.setStarted global }
                         else
                             model

@@ -64,7 +64,7 @@ view model global =
                 , div [ class "board-wrapper" ]
                     [ App.map MenuMsg <| Menu.view model.menu global
                     , App.map HeaderMsg <| Header.view model.header global
-                    , App.map MinefieldMsg <| Minefield.view model.minefield
+                    , App.map MinefieldMsg <| Minefield.view model.minefield global
                     ]
                 ]
             ]
