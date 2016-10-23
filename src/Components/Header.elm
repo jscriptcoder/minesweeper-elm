@@ -160,14 +160,30 @@ subscriptions model global =
 getDigits : Int -> ( String, String, String )
 getDigits num =
     let
+        isMinus =
+            num < 0
+
+        pad =
+            if isMinus then
+                2
+            else
+                3
+
         digits =
             num
+                |> abs
                 |> toString
-                |> padLeft 3 '0'
+                |> padLeft pad '0'
+
+        digitsWithSign =
+            if isMinus then
+                "m" ++ digits
+            else
+                digits
     in
-        ( slice 0 1 digits
-        , slice 1 2 digits
-        , slice 2 3 digits
+        ( slice 0 1 digitsWithSign
+        , slice 1 2 digitsWithSign
+        , slice 2 3 digitsWithSign
         )
 
 

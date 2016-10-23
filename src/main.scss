@@ -286,6 +286,7 @@
 		border: 3px solid;
 		border-color: #7d7d7d #fff #fff #7d7d7d;
 
+		// Prevents the tiles from being clicked on
 		.mines-blocker { @extend .on-top }
 
 		.row {
