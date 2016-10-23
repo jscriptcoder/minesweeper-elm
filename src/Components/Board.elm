@@ -118,7 +118,7 @@ update msg model global =
                         { model
                             | minefield = newMinefield
                             , header =
-                                processMinefieldForHeaderFace
+                                processMinefieldForHeader
                                     newCell
                                     model.header
                         }
@@ -160,13 +160,29 @@ processHeaderMsg headerMsg model global =
         model
 
 
-processMinefieldForHeaderFace : Cell.Model -> Header.Model -> Header.Model
-processMinefieldForHeaderFace cell header =
-    if cell.state == Cell.Pressed then
-        { header | face = Header.Surprised }
-    else if cell.state == Cell.Opened then
-        { header | face = Header.Smile }
-    else if cell.state == Cell.MineHit then
-        { header | face = Header.Sad }
-    else
-        { header | face = Header.Smile }
+processMinefieldForHeader : Cell.Model -> Header.Model -> Header.Model
+processMinefieldForHeader cell header =
+    case cell.state of
+        Cell.Pressed ->
+            { header | face = Header.Surprised }
+
+        Cell.Opened ->
+            { header | face = Header.Smile }
+
+        Cell.MineHit ->
+            { header | face = Header.Sad }
+
+        Cell.Flag ->
+            { header
+                | flags = header.flags + 1
+                , face = Header.Smile
+            }
+
+        _ ->
+            if cell.prevState == Cell.Flag then
+                { header
+                    | flags = header.flags - 1
+                    , face = Header.Smile
+                }
+            else
+                { header | face = Header.Smile }

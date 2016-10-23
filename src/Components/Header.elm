@@ -138,7 +138,7 @@ update msg model =
             { model | timer = model.timer + 1 }
 
         ResetGame ->
-            { model | timer = 0 }
+            { model | timer = 0, flags = 0 }
 
 
 
