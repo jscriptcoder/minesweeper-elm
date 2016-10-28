@@ -258,8 +258,14 @@ processMinefieldMsg minefieldMsg model =
                     let
                         global =
                             model.global
+
+                        minefield =
+                            model.board.minefield
+
+                        isDone =
+                            Global.isDone minefield.opened global
                     in
-                        if cell.mine then
+                        if cell.mine || isDone then
                             { model | global = Global.setOver global }
                         else if Global.isReady global.state then
                             { model | global = Global.setStarted global }
