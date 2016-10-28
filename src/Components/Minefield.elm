@@ -35,7 +35,9 @@ type alias Grid =
 
 
 type alias Model =
-    Grid
+    { opened : Int
+    , grid : Grid
+    }
 
 
 model : Model
@@ -51,7 +53,7 @@ view : Model -> Global.Model -> Html Msg
 view model global =
     let
         cells =
-            List.map viewRowCells <| Matrix.toList model
+            List.map viewRowCells <| Matrix.toList model.grid
 
         blocker =
             viewMinesBlocker global
@@ -88,13 +90,13 @@ viewCell cell =
 -- UPDATE
 
 
-update : Msg -> Model -> ( Model, Maybe Cell.Model )
-update msg model =
+update : Msg -> Model -> Global.Model -> ( Model, Maybe Cell.Model )
+update msg model global =
     case msg of
         CellMsg cellMsg ->
             let
                 maybeCell =
-                    Cell.update cellMsg
+                    Cell.update cellMsg global
             in
                 case maybeCell of
                     Just cell ->
@@ -108,17 +110,24 @@ updateGrid : Cell.Model -> Model -> Model
 updateGrid newCell model =
     let
         newModel =
-            Matrix.set
-                newCell.loc
-                newCell
-                model
+            { model
+                | grid =
+                    Matrix.set
+                        newCell.loc
+                        newCell
+                        model.grid
+            }
     in
         case newCell.state of
             Cell.MineHit ->
-                openAllMines newModel
+                { model | grid = openAllMines newModel.grid }
 
             Cell.Opened ->
-                openEmptyNeighbors newCell newModel
+                let
+                    newModelWithOpened =
+                        incrementOpenedBy 1 newModel
+                in
+                    openEmptyNeighbors newCell newModelWithOpened
 
             _ ->
                 newModel
@@ -128,7 +137,7 @@ updateGrid newCell model =
 -- Helpers
 
 
-create : Global.Model -> Grid
+create : Global.Model -> Model
 create global =
     let
         rows =
@@ -152,7 +161,7 @@ create global =
                 columns
                 (\loc -> Cell.makeCell width loc randomMines)
     in
-        findCellsValue grid
+        { opened = 0, grid = findCellsValue grid }
 
 
 findCellsValue : Grid -> Grid
@@ -231,46 +240,54 @@ findNeighbors location grid =
             ]
 
 
-openEmptyNeighbors : Cell.Model -> Grid -> Grid
-openEmptyNeighbors newCell grid =
+openEmptyNeighbors : Cell.Model -> Model -> Model
+openEmptyNeighbors newCell model =
     if Cell.isEmpty newCell then
         let
             qualifiedNeighbors =
                 findQualifiedNeighbors
                     newCell.loc
-                    grid
+                    model.grid
 
-            newGrid =
-                List.foldl openCell grid qualifiedNeighbors
+            neighborsToOpen =
+                List.length qualifiedNeighbors
+
+            modelWithNewOpened =
+                incrementOpenedBy neighborsToOpen model
+
+            newModel =
+                { modelWithNewOpened
+                    | grid = List.foldl openCell model.grid qualifiedNeighbors
+                }
         in
             openEmptyNeighborsHelper
                 (head qualifiedNeighbors)
                 (tail qualifiedNeighbors)
-                newGrid
+                newModel
     else
-        grid
+        model
 
 
-openEmptyNeighborsHelper : Maybe Cell.Model -> Maybe (List Cell.Model) -> Grid -> Grid
-openEmptyNeighborsHelper maybeCell maybeNeighbors grid =
+openEmptyNeighborsHelper : Maybe Cell.Model -> Maybe (List Cell.Model) -> Model -> Model
+openEmptyNeighborsHelper maybeCell maybeNeighbors model =
     case maybeCell of
         Just cell ->
             let
-                newGrid =
-                    openEmptyNeighbors cell grid
+                newModel =
+                    openEmptyNeighbors cell model
             in
                 case maybeNeighbors of
                     Just neighbors ->
                         openEmptyNeighborsHelper
                             (head neighbors)
                             (tail neighbors)
-                            newGrid
+                            newModel
 
                     Nothing ->
-                        newGrid
+                        newModel
 
         Nothing ->
-            grid
+            model
 
 
 findQualifiedNeighbors : Location -> Grid -> List Cell.Model
@@ -280,6 +297,11 @@ findQualifiedNeighbors loc grid =
             findNeighbors loc grid
     in
         List.filter (\cell -> Cell.canOpen cell) neighbors
+
+
+incrementOpenedBy : Int -> Model -> Model
+incrementOpenedBy inc model =
+    { model | opened = model.opened + inc }
 
 
 openCell : Cell.Model -> Grid -> Grid

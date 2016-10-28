@@ -23,6 +23,7 @@ import Html.Events
         )
 import List exposing (member)
 import Matrix exposing (Location)
+import Components.Global as Global
 import Components.Utils exposing (onRightClick)
 
 
@@ -91,8 +92,8 @@ view model =
 -- UPDATE
 
 
-update : Msg -> Maybe Model
-update msg =
+update : Msg -> Global.Model -> Maybe Model
+update msg global =
     case msg of
         MouseDown model ->
             if isReadyToOpen model then
@@ -121,7 +122,10 @@ update msg =
                     Just { model | state = Flag, prevState = model.state }
 
                 Flag ->
-                    Just { model | state = Question, prevState = model.state }
+                    if global.marks then
+                        Just { model | state = Question, prevState = model.state }
+                    else
+                        Just { model | state = Closed, prevState = model.state }
 
                 Question ->
                     Just { model | state = Closed, prevState = model.state }

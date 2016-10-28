@@ -38,6 +38,7 @@ type Face
     = Smile
     | Pressed
     | Surprised
+    | Cool
     | Sad
 
 
@@ -198,6 +199,9 @@ typeFace face =
 
         Surprised ->
             "surprised"
+
+        Cool ->
+            "sunglasses"
 
         Sad ->
             "sad"

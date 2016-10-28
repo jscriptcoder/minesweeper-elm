@@ -111,17 +111,23 @@ update msg model global =
         MinefieldMsg minefieldMsg ->
             let
                 ( newMinefield, maybeNewCell ) =
-                    Minefield.update minefieldMsg model.minefield
+                    Minefield.update minefieldMsg model.minefield global
             in
                 case maybeNewCell of
                     Just newCell ->
-                        { model
-                            | minefield = newMinefield
-                            , header =
-                                processMinefieldForHeader
-                                    newCell
-                                    model.header
-                        }
+                        if Global.isDone newMinefield.opened global then
+                            { model
+                                | minefield = newMinefield
+                                , header = coolHeaderFace model.header
+                            }
+                        else
+                            { model
+                                | minefield = newMinefield
+                                , header =
+                                    processMinefieldForHeader
+                                        newCell
+                                        model.header
+                            }
 
                     Nothing ->
                         { model | minefield = newMinefield }
@@ -186,3 +192,8 @@ processMinefieldForHeader cell header =
                 }
             else
                 { header | face = Header.Smile }
+
+
+coolHeaderFace : Header.Model -> Header.Model
+coolHeaderFace header =
+    { header | face = Header.Cool }

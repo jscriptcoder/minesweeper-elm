@@ -18,6 +18,7 @@ module Components.Global
         , isOver
         , setOver
         , toggleMarks
+        , isDone
         )
 
 import Random
@@ -248,3 +249,8 @@ setOver model =
 toggleMarks : Model -> Model
 toggleMarks model =
     { model | marks = not model.marks }
+
+
+isDone : Int -> Model -> Bool
+isDone opened model =
+    opened == (model.rows * model.columns) - model.mines
