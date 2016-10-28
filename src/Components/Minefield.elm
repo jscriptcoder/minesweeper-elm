@@ -6,6 +6,7 @@ module Components.Minefield
         , view
         , update
         , create
+        , flagAllMines
         )
 
 import Html exposing (Html, div)
@@ -120,7 +121,7 @@ updateGrid newCell model =
     in
         case newCell.state of
             Cell.MineHit ->
-                { model | grid = openAllMines newModel.grid }
+                openAllMines newModel
 
             Cell.Opened ->
                 let
@@ -312,13 +313,31 @@ openCell cell grid =
         grid
 
 
-openAllMines : Grid -> Grid
-openAllMines grid =
-    Matrix.map
-        (\cell ->
-            if Cell.isCoveredMine cell then
-                { cell | state = Cell.Mine }
-            else
-                cell
-        )
-        grid
+openAllMines : Model -> Model
+openAllMines model =
+    { model
+        | grid =
+            Matrix.map
+                (\cell ->
+                    if Cell.isCoveredMine cell then
+                        { cell | state = Cell.Mine }
+                    else
+                        cell
+                )
+                model.grid
+    }
+
+
+flagAllMines : Model -> Model
+flagAllMines model =
+    { model
+        | grid =
+            Matrix.map
+                (\cell ->
+                    if cell.mine then
+                        { cell | state = Cell.Flag }
+                    else
+                        cell
+                )
+                model.grid
+    }

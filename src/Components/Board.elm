@@ -117,7 +117,7 @@ update msg model global =
                     Just newCell ->
                         if Global.isDone newMinefield.opened global then
                             { model
-                                | minefield = newMinefield
+                                | minefield = Minefield.flagAllMines newMinefield
                                 , header = coolHeaderFace model.header
                             }
                         else
