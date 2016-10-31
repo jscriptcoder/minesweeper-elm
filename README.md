@@ -1,7 +1,7 @@
 # Minesweeper written in Elm
 My first project using this fascinating functional language, Elm.
 
-[Click here for demo](https://jscriptcoder.github.io/minesweeper-elm/)
+[Click here for demo](https://jscriptcoder.github.io/minesweeper-elm/) (tested only in Chrome)
 
 It all started 6 months ago (by the time I wrote this) with Redux. After discovering this great architecture, I began experimenting with it:
 
